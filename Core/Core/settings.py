@@ -41,6 +41,9 @@ INSTALLED_APPS = [
 
     #my_apps
     'home_app.apps.HomeAppConfig',
+
+    #my_install_apps
+
 ]
 
 MIDDLEWARE = [
