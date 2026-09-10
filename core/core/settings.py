@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     # my_apps
     'home_app.apps.HomeAppConfig',
+    'accounts_app.apps.AccountsAppConfig',
 
     # my_install_apps
     'django_cleanup.apps.CleanupConfig',
@@ -134,3 +135,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+AUTH_USER_MODEL = "accounts_app.User"
