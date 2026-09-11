@@ -138,3 +138,5 @@ MAILERS = {
 
 
 AUTH_USER_MODEL = "accounts_app.User"
+
+LOGIN_REDIRECT_URL = '/'

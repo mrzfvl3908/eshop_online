@@ -30,16 +30,19 @@
                     <div id="success"></div>
                     <form method="POST" action="{% url 'accounts_app:login' %}">
                         {% csrf_token %}
+                        {{ form.non_field_errors }}
                         <div class="control-group">
 {#                            <input type="text" class="form-control" id="name" placeholder="Your Phone"#}
 {#                                   required="required" data-validation-required-message="Please enter your phone number"/>#}
-                            {{ form.phone }}
+                            {{ form.username }}
+                            {{ form.username.errors }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
 {#                            <input type="password" class="form-control" id="email" placeholder="Your Password"#}
 {#                                   required="required" data-validation-required-message="Please enter your password"/>#}
                             {{ form.password }}
+                            {{ form.password.errors }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div>
