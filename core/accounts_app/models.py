@@ -38,8 +38,8 @@ class User(AbstractBaseUser):
         unique=True,
     )
     fullname = models.CharField(max_length=255, verbose_name='نام کامل')
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, verbose_name='فعال')
+    is_admin = models.BooleanField(default=False, verbose_name='ادمین')
 
     objects = UserManager()
 
