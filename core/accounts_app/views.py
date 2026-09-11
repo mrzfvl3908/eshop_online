@@ -1,4 +1,10 @@
 from django.shortcuts import render
+from django.views import View
+from .forms import LoginForm
 
-def user_login(request):
-    return render(request, 'accounts_app/login.html', {})
+
+class UserLogin(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(request, 'accounts_app/login.html', {'form': form})
+

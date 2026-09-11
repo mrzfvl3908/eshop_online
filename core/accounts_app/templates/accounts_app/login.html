@@ -28,15 +28,18 @@
             <div class=" mb-5 contact-us" style="">
                 <div class="contact-form bg-light p-30">
                     <div id="success"></div>
-                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                    <form method="POST" action="{% url 'accounts_app:login' %}">
+                        {% csrf_token %}
                         <div class="control-group">
-                            <input type="text" class="form-control" id="name" placeholder="Your Phone"
-                                   required="required" data-validation-required-message="Please enter your phone number"/>
+{#                            <input type="text" class="form-control" id="name" placeholder="Your Phone"#}
+{#                                   required="required" data-validation-required-message="Please enter your phone number"/>#}
+                            {{ form.phone }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
-                            <input type="password" class="form-control" id="email" placeholder="Your Password"
-                                   required="required" data-validation-required-message="Please enter your password"/>
+{#                            <input type="password" class="form-control" id="email" placeholder="Your Password"#}
+{#                                   required="required" data-validation-required-message="Please enter your password"/>#}
+                            {{ form.password }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div>
