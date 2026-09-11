@@ -30,7 +30,9 @@
                     <div id="success"></div>
                     <form method="POST" action="{% url 'accounts_app:login' %}">
                         {% csrf_token %}
-                        {{ form.non_field_errors }}
+                        {% for error in form.non_field_errors %}
+                        	<p class="alert alert-danger">{{ error }}</p>
+                        {% endfor %}
                         <div class="control-group">
 {#                            <input type="text" class="form-control" id="name" placeholder="Your Phone"#}
 {#                                   required="required" data-validation-required-message="Please enter your phone number"/>#}
