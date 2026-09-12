@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -136,7 +140,17 @@ MAILERS = {
     },
 }
 
+AUTHENTICATION_BACKENDS = [
+    'accounts_app.backends.PhoneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 AUTH_USER_MODEL = "accounts_app.User"
 
 LOGIN_REDIRECT_URL = '/'
+
+
+# تنظیمات ملی پیامک
+MELIPAYAMAK_USERNAME = os.getenv('MELIPAYAMAK_USERNAME')
+MELIPAYAMAK_API_KEY = os.getenv('MELIPAYAMAK_API_KEY')
+MELIPAYAMAK_FROM_NUMBER = os.getenv('MELIPAYAMAK_FROM_NUMBER')

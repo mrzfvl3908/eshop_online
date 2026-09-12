@@ -1,8 +1,154 @@
+{#{% extends 'base.html' %}#}
+{#{% load static %}#}
+{##}
+{#{% block title %}#}
+{#    Login#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{##}
+{#    <!-- Breadcrumb Start -->#}
+{#    <div class="container-fluid">#}
+{#        <div class="row px-xl-5">#}
+{#            <div class="col-12">#}
+{#                <nav class="breadcrumb bg-light mb-30">#}
+{#                    <a class="breadcrumb-item text-dark" href="{% url 'home_app:home' %}">#}
+{#                        Home#}
+{#                    </a>#}
+{#                    <span class="breadcrumb-item active">#}
+{#                        Login#}
+{#                    </span>#}
+{#                </nav>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Breadcrumb End -->#}
+{##}
+{##}
+{#    <!-- Login Start -->#}
+{#    <div class="container-fluid">#}
+{##}
+{#        <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4">#}
+{#            <span class="bg-secondary pr-3">#}
+{#                Login#}
+{#            </span>#}
+{#        </h2>#}
+{##}
+{#        <div class="px-xl-5">#}
+{#            <div class="mb-5 contact-us">#}
+{#                <div class="contact-form bg-light p-30">#}
+{##}
+{#                    <form method="POST" action="{% url 'accounts_app:login' %}">#}
+{#                        {% csrf_token %}#}
+{##}
+{#                        <!-- خطاهای کلی فرم -->#}
+{#                        {% for error in form.non_field_errors %}#}
+{#                            <p class="alert alert-danger">#}
+{#                                {{ error }}#}
+{#                            </p>#}
+{#                        {% endfor %}#}
+{##}
+{##}
+{#                        <!-- Phone -->#}
+{#                        <div class="control-group">#}
+{##}
+{#                            {{ form.username }}#}
+{##}
+{#                            {% for error in form.username.errors %}#}
+{#                                <p class="alert alert-danger mt-2">#}
+{#                                    {{ error }}#}
+{#                                </p>#}
+{#                            {% endfor %}#}
+{##}
+{#                        </div>#}
+{#                    <br/>#}
+{##}
+{##}
+{#                        <!-- Password -->#}
+{#                        <div class="control-group">#}
+{##}
+{#                            <div style="position: relative;">#}
+{##}
+{#                                {{ form.password }}#}
+{##}
+{#                                <button#}
+{#                                        type="button"#}
+{#                                        onclick="togglePassword()"#}
+{#                                        id="togglePasswordButton"#}
+{#                                        style="#}
+{#                                        position: absolute;#}
+{#                                        top: 50%;#}
+{#                                        right: 10px;#}
+{#                                        transform: translateY(-50%);#}
+{#                                        border: none;#}
+{#                                        background: transparent;#}
+{#                                        cursor: pointer;#}
+{#                                        padding: 5px;#}
+{#                                        color: #6c757d;#}
+{#                                        font-size: 18px;#}
+{#                                    "#}
+{#                                        aria-label="Show password"#}
+{#                                >#}
+{#                                    👁#}
+{#                                </button>#}
+{##}
+{#                            </div>#}
+{##}
+{#                            {% for error in form.password.errors %}#}
+{#                                <p class="alert alert-danger mt-2">#}
+{#                                    {{ error }}#}
+{#                                </p>#}
+{#                            {% endfor %}#}
+{##}
+{#                        </div>#}
+{#                        <br/>#}
+{##}
+{#                        <!-- Login Button -->#}
+{#                        <div>#}
+{#                            <button#}
+{#                                    class="btn btn-primary py-2 px-4"#}
+{#                                    type="submit"#}
+{#                                    id="sendMessageButton">#}
+{#                                Login#}
+{#                            </button>#}
+{#                        </div>#}
+{##}
+{#                    </form>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+{#    <!-- Login End -->#}
+{##}
+{##}
+{#    <!-- Show / Hide Password -->#}
+{#    <script>#}
+{#        function togglePassword() {#}
+{##}
+{#            const passwordInput = document.getElementById("id_password");#}
+{#            const button = document.getElementById("togglePasswordButton");#}
+{##}
+{#            if (passwordInput.type === "password") {#}
+{#                passwordInput.type = "text";#}
+{#                button.innerHTML = "🙈";#}
+{#                button.setAttribute("aria-label", "Hide password");#}
+{#            } else {#}
+{#                passwordInput.type = "password";#}
+{#                button.innerHTML = "👁";#}
+{#                button.setAttribute("aria-label", "Show password");#}
+{#            }#}
+{#        }#}
+{#    </script>#}
+{##}
+{#{% endblock %}#}
+{##}
 {% extends 'base.html' %}
 {% load static %}
 
 {% block title %}
-    Login
+    ورود به حساب کاربری
 {% endblock %}
 
 {% block content %}
@@ -16,7 +162,7 @@
                         Home
                     </a>
                     <span class="breadcrumb-item active">
-                        Login
+                        ورود
                     </span>
                 </nav>
             </div>
@@ -25,122 +171,199 @@
     <!-- Breadcrumb End -->
 
 
-    <!-- Login Start -->
     <div class="container-fluid">
-
         <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4">
             <span class="bg-secondary pr-3">
-                Login
+                ورود به حساب کاربری
             </span>
         </h2>
 
         <div class="px-xl-5">
             <div class="mb-5 contact-us">
-                <div class="contact-form bg-light p-30">
+                <div class="contact-form bg-light p-30" style="max-width: 450px; margin: 0 auto;">
 
-                    <form method="POST" action="{% url 'accounts_app:login' %}">
-                        {% csrf_token %}
+                    <!-- پیام‌ها -->
+                    <div id="message-box" style="display: none;" class="alert mb-3"></div>
 
-                        <!-- خطاهای کلی فرم -->
-                        {% for error in form.non_field_errors %}
-                            <p class="alert alert-danger">
-                                {{ error }}
-                            </p>
-                        {% endfor %}
-
-
-                        <!-- Phone -->
-                        <div class="control-group">
-
-                            {{ form.username }}
-
-                            {% for error in form.username.errors %}
-                                <p class="alert alert-danger mt-2">
-                                    {{ error }}
-                                </p>
-                            {% endfor %}
-
-                        </div>
-                    <br/>
-
-
-                        <!-- Password -->
-                        <div class="control-group">
-
-                            <div style="position: relative;">
-
-                                {{ form.password }}
-
-                                <button
-                                        type="button"
-                                        onclick="togglePassword()"
-                                        id="togglePasswordButton"
-                                        style="
-                                        position: absolute;
-                                        top: 50%;
-                                        right: 10px;
-                                        transform: translateY(-50%);
-                                        border: none;
-                                        background: transparent;
-                                        cursor: pointer;
-                                        padding: 5px;
-                                        color: #6c757d;
-                                        font-size: 18px;
-                                    "
-                                        aria-label="Show password"
-                                >
-                                    👁
-                                </button>
-
-                            </div>
-
-                            {% for error in form.password.errors %}
-                                <p class="alert alert-danger mt-2">
-                                    {{ error }}
-                                </p>
-                            {% endfor %}
-
-                        </div>
-                        <br/>
-
-                        <!-- Login Button -->
-                        <div>
-                            <button
-                                    class="btn btn-primary py-2 px-4"
-                                    type="submit"
-                                    id="sendMessageButton">
-                                Login
-                            </button>
+                    <!-- ========== مرحله ۱: شماره تلفن ========== -->
+                    <div id="step-phone">
+                        <div class="control-group mb-3">
+                            <input type="text"
+                                   id="phone"
+                                   class="form-control"
+                                   placeholder="09123456789"
+                                   maxlength="11"
+                                   dir="ltr"
+                                   autocomplete="tel">
                         </div>
 
-                    </form>
+                        <button type="button"
+                                id="btn-send-code"
+                                class="btn btn-primary py-2 px-4 w-100">
+                            ارسال کد تأیید
+                        </button>
+                    </div>
+
+                    <!-- ========== مرحله ۲: کد تأیید ========== -->
+                    <div id="step-code" style="display: none;">
+                        <p class="text-center mb-3">
+                            کد تأیید به شماره
+                            <strong id="display-phone" dir="ltr"></strong>
+                            ارسال شد.
+                        </p>
+
+                        <div class="control-group mb-3">
+                            <input type="text"
+                                   id="code"
+                                   class="form-control text-center"
+                                   placeholder="کد ۶ رقمی"
+                                   maxlength="6"
+                                   dir="ltr"
+                                   autocomplete="one-time-code">
+                        </div>
+
+                        <button type="button"
+                                id="btn-verify-code"
+                                class="btn btn-primary py-2 px-4 w-100 mb-2">
+                            تأیید و ورود
+                        </button>
+
+                        <button type="button"
+                                id="btn-resend"
+                                class="btn btn-outline-secondary py-2 px-4 w-100">
+                            ارسال مجدد کد
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'accounts_app:login' %}">
+                            ورود با رمز عبور
+                        </a>
+                    </div>
 
                 </div>
             </div>
         </div>
-
     </div>
-    <!-- Login End -->
 
-
-    <!-- Show / Hide Password -->
     <script>
-        function togglePassword() {
+        const phoneInput = document.getElementById('phone');
+        const codeInput = document.getElementById('code');
+        const stepPhone = document.getElementById('step-phone');
+        const stepCode = document.getElementById('step-code');
+        const messageBox = document.getElementById('message-box');
+        const displayPhone = document.getElementById('display-phone');
+        const btnSendCode = document.getElementById('btn-send-code');
+        const btnVerifyCode = document.getElementById('btn-verify-code');
+        const btnResend = document.getElementById('btn-resend');
 
-            const passwordInput = document.getElementById("id_password");
-            const button = document.getElementById("togglePasswordButton");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                button.innerHTML = "🙈";
-                button.setAttribute("aria-label", "Hide password");
-            } else {
-                passwordInput.type = "password";
-                button.innerHTML = "👁";
-                button.setAttribute("aria-label", "Show password");
-            }
+        // نمایش پیام
+        function showMessage(text, isSuccess) {
+            messageBox.style.display = 'block';
+            messageBox.className = isSuccess ? 'alert alert-success mb-3' : 'alert alert-danger mb-3';
+            messageBox.innerText = text;
         }
+
+        // ارسال کد
+        function sendCode() {
+            const phone = phoneInput.value.trim();
+
+            if (!phone || phone.length !== 11 || !phone.startsWith('09')) {
+                showMessage('شماره تلفن باید ۱۱ رقم و با ۰۹ شروع شود.', false);
+                return;
+            }
+
+            btnSendCode.disabled = true;
+            btnSendCode.innerText = 'در حال ارسال...';
+
+            const formData = new FormData();
+            formData.append('action', 'send_code');
+            formData.append('phone', phone);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "accounts_app:otp_login" %}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, true);
+                    displayPhone.innerText = phone;
+                    stepPhone.style.display = 'none';
+                    stepCode.style.display = 'block';
+                    codeInput.focus();
+                } else {
+                    showMessage(data.message, false);
+                }
+            })
+            .catch(() => {
+                showMessage('خطا در ارتباط با سرور.', false);
+            })
+            .finally(() => {
+                btnSendCode.disabled = false;
+                btnSendCode.innerText = 'ارسال کد تأیید';
+            });
+        }
+
+        // تأیید کد
+        function verifyCode() {
+            const code = codeInput.value.trim();
+
+            if (!code || code.length !== 6) {
+                showMessage('کد تأیید باید ۶ رقم باشد.', false);
+                return;
+            }
+
+            btnVerifyCode.disabled = true;
+            btnVerifyCode.innerText = 'در حال بررسی...';
+
+            const formData = new FormData();
+            formData.append('action', 'verify_code');
+            formData.append('code', code);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "accounts_app:otp_login" %}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, true);
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url || '/';
+                    }, 800);
+                } else {
+                    showMessage(data.message, false);
+                    btnVerifyCode.disabled = false;
+                    btnVerifyCode.innerText = 'تأیید و ورود';
+                }
+            })
+            .catch(() => {
+                showMessage('خطا در ارتباط با سرور.', false);
+                btnVerifyCode.disabled = false;
+                btnVerifyCode.innerText = 'تأیید و ورود';
+            });
+        }
+
+        // رویدادها
+        btnSendCode.addEventListener('click', sendCode);
+        btnVerifyCode.addEventListener('click', verifyCode);
+        btnResend.addEventListener('click', () => {
+            stepCode.style.display = 'none';
+            stepPhone.style.display = 'block';
+            messageBox.style.display = 'none';
+            codeInput.value = '';
+        });
+
+        // با فشردن Enter هم کار کند
+        phoneInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendCode();
+        });
+        codeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyCode();
+        });
     </script>
 
 {% endblock %}
-

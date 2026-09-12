@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    ورود با کد یکبار مصرف
+{% endblock %}
+
+{% block content %}
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="{% url 'home_app:home' %}">
+                        Home
+                    </a>
+                    <span class="breadcrumb-item active">
+                        ورود با کد
+                    </span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <!-- Request OTP Start -->
+    <div class="container-fluid">
+
+        <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4">
+            <span class="bg-secondary pr-3">
+                ورود با کد یکبار مصرف
+            </span>
+        </h2>
+
+        <div class="px-xl-5">
+            <div class="mb-5 contact-us">
+                <div class="contact-form bg-light p-30">
+
+                    <!-- پیام‌های موفقیت / خطا -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'accounts_app:request_otp' %}">
+                        {% csrf_token %}
+
+                        <!-- شماره تلفن -->
+                        <div class="control-group">
+                            {{ form.phone }}
+
+                            {% for error in form.phone.errors %}
+                                <p class="alert alert-danger mt-2">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <br/>
+
+                        <!-- دکمه ارسال کد -->
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit">
+                                ارسال کد تأیید
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <a href="{% url 'accounts_app:login' %}">
+                            ورود با رمز عبور
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Request OTP End -->
+
+{% endblock %}
