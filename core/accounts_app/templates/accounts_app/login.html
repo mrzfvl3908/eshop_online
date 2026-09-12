@@ -30,28 +30,54 @@
                     <div id="success"></div>
                     <form method="POST" action="{% url 'accounts_app:login' %}">
                         {% csrf_token %}
+
+                        <!-- خطاهای کلی فرم -->
                         {% for error in form.non_field_errors %}
-                        	<p class="alert alert-danger">{{ error }}</p>
+                            <p class="alert alert-danger">
+                                {{ error }}
+                            </p>
                         {% endfor %}
+
+                        <!-- Phone -->
                         <div class="control-group">
-{#                            <input type="text" class="form-control" id="name" placeholder="Your Phone"#}
-{#                                   required="required" data-validation-required-message="Please enter your phone number"/>#}
+
                             {{ form.username }}
-                            {{ form.username.errors }}
+
+                            {% for error in form.username.errors %}
+                                <p class="alert alert-danger mt-2">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+
                             <p class="help-block text-danger"></p>
                         </div>
+
+                        <!-- Password -->
                         <div class="control-group">
-{#                            <input type="password" class="form-control" id="email" placeholder="Your Password"#}
-{#                                   required="required" data-validation-required-message="Please enter your password"/>#}
+
                             {{ form.password }}
-                            {{ form.password.errors }}
+
+                            {% for error in form.password.errors %}
+                                <p class="alert alert-danger mt-2">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+
                             <p class="help-block text-danger"></p>
                         </div>
+
+                        <!-- Login Button -->
                         <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Login
+                            <button
+                                    class="btn btn-primary py-2 px-4"
+                                    type="submit"
+                                    id="sendMessageButton">
+                                Login
                             </button>
                         </div>
+
                     </form>
+
                 </div>
             </div>
 
