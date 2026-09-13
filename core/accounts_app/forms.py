@@ -9,7 +9,7 @@ User = get_user_model()
 
 phone_validator = RegexValidator(
     regex=r"^09\d{9}$",
-    message="شماره تلفن باید 11 رقم و با 09 شروع شود."
+    message="شماره تلفن باید 11 رقم و با 09 شروع شود"
 )
 
 
