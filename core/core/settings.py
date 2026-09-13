@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'admin_persian', #=> حتما باید بالاتر از خط پایینی باشد و بعدش باید حتما migrate کنی
+    'admin_persian',  # => حتما باید بالاتر از خط پایینی باشد و بعدش باید حتما migrate کنی
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -136,14 +136,37 @@ MAILERS = {
     },
 }
 
-
 AUTH_USER_MODEL = "accounts_app.User"
 
 LOGIN_REDIRECT_URL = '/'
 
-
+# ========MELIPAYAMAK========
 MELIPAYAMAK_SHARED_URL = "https://console.melipayamak.com/api/send/shared/5ea1b0cf365846d68ace456275e1dab0"
 MELIPAYAMAK_BODY_ID = 535810
 MELIPAYAMAK_OTP_EXPIRE_MINUTES = 2
 MELIPAYAMAK_MAX_OTP_ATTEMPTS = 5
 MELIPAYAMAK_OTP_RESEND_SECONDS = 60
+
+#Security
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = "Lax"
+# SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SAMESITE = "Lax"
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_SAMESITE = "Lax"
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_REFERRER_POLICY = "same-origin"
+# SECURE_SSL_REDIRECT = True
+
+
+#Rate Limit
+AUTH_RATE_LIMIT_ENABLED = True
+LOGIN_RATE_LIMIT = 10
+LOGIN_RATE_LIMIT_WINDOW = 15 * 60
+OTP_SEND_RATE_LIMIT = 5
+OTP_SEND_RATE_LIMIT_WINDOW = 15 * 60
+PASSWORD_RESET_RATE_LIMIT = 5
+PASSWORD_RESET_RATE_LIMIT_WINDOW = 15 * 60

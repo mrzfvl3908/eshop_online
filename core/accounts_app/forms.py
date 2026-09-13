@@ -1,17 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    UserCreationForm,
-)
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.contrib.auth.password_validation import validate_password
 
 User = get_user_model()
-
-# ==================================================
-# Phone Validator
-# ==================================================
 
 phone_validator = RegexValidator(
     regex=r"^09\d{9}$",
@@ -19,16 +13,10 @@ phone_validator = RegexValidator(
 )
 
 
-# ==================================================
-# Login Form
-# ==================================================
-
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         label="Phone Number",
-        validators=[
-            phone_validator
-        ],
+        validators=[phone_validator],
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
@@ -51,10 +39,16 @@ class LoginForm(AuthenticationForm):
         )
     )
 
+    remember_me = forms.BooleanField(
+        label="Remember me",
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "form-check-input"
+            }
+        )
+    )
 
-# ==================================================
-# Register Form
-# ==================================================
 
 class RegisterForm(UserCreationForm):
     fullname = forms.CharField(
@@ -71,9 +65,8 @@ class RegisterForm(UserCreationForm):
 
     phone = forms.CharField(
         label="Phone Number",
-        validators=[
-            phone_validator
-        ],
+        max_length=11,
+        validators=[phone_validator],
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
@@ -120,7 +113,6 @@ class RegisterForm(UserCreationForm):
     )
 
     class Meta:
-
         model = User
 
         fields = (
@@ -133,11 +125,9 @@ class RegisterForm(UserCreationForm):
 
     def clean_phone(self):
 
-        phone = self.cleaned_data["phone"]
+        phone = self.cleaned_data["phone"].strip()
 
-        if User.objects.filter(
-                phone=phone
-        ).exists():
+        if User.objects.filter(phone=phone).exists():
             raise ValidationError(
                 "این شماره تلفن قبلاً ثبت نام کرده است."
             )
@@ -148,19 +138,16 @@ class RegisterForm(UserCreationForm):
 
         email = self.cleaned_data.get("email")
 
-        if email and User.objects.filter(
-                email=email
-        ).exists():
-            raise ValidationError(
-                "این ایمیل قبلاً ثبت نام کرده است."
-            )
+        if email:
+            email = email.strip().lower()
+
+            if User.objects.filter(email=email).exists():
+                raise ValidationError(
+                    "این ایمیل قبلاً ثبت نام کرده است."
+                )
 
         return email
 
-
-# ==================================================
-# OTP Verification Form
-# ==================================================
 
 class OTPVerificationForm(forms.Form):
     code = forms.CharField(
@@ -183,3 +170,103 @@ class OTPVerificationForm(forms.Form):
             }
         )
     )
+
+
+class ForgotPasswordPhoneForm(forms.Form):
+    phone = forms.CharField(
+        label="Phone Number",
+        max_length=11,
+        validators=[phone_validator],
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Phone Number",
+                "maxlength": "11",
+                "autocomplete": "tel",
+                "inputmode": "tel",
+            }
+        )
+    )
+
+
+class ForgotPasswordOTPForm(forms.Form):
+    code = forms.CharField(
+        label="Verification Code",
+        max_length=6,
+        min_length=6,
+        validators=[
+            RegexValidator(
+                regex=r"^\d{6}$",
+                message="کد تایید باید 6 رقم باشد."
+            )
+        ],
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control text-center",
+                "placeholder": "Verification Code",
+                "maxlength": "6",
+                "autocomplete": "one-time-code",
+                "inputmode": "numeric",
+            }
+        )
+    )
+
+
+class ResetPasswordForm(forms.Form):
+    password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "New Password",
+                "autocomplete": "new-password",
+            }
+        )
+    )
+
+    password2 = forms.CharField(
+        label="Confirm Password",
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Confirm Password",
+                "autocomplete": "new-password",
+            }
+        )
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.user = user
+
+    def clean_password1(self):
+
+        password1 = self.cleaned_data.get("password1")
+
+        if self.user and password1:
+            validate_password(
+                password1,
+                self.user
+            )
+
+        return password1
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if (
+                password1
+                and password2
+                and password1 != password2
+        ):
+            raise ValidationError(
+                "رمزهای عبور یکسان نیستند."
+            )
+
+        return cleaned_data

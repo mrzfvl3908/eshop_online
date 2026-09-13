@@ -1,16 +1,18 @@
+import logging
+
 import requests
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+
+logger = logging.getLogger(__name__)
 
 
 def send_otp_sms(phone, code):
     data = {
         "bodyId": settings.MELIPAYAMAK_BODY_ID,
         "to": phone,
-        "args": [
-            code
-        ],
+        "args": [code],
     }
 
     try:
@@ -27,34 +29,32 @@ def send_otp_sms(phone, code):
 
     except requests.RequestException:
 
+        logger.exception(
+            "SMS provider request failed."
+        )
+
         raise ValidationError(
-            "ارتباط با سرویس پیامک برقرار نشد."
+            "ارسال پیامک انجام نشد. لطفاً دوباره تلاش کنید."
         )
 
     except ValueError:
 
-        raise ValidationError(
-            "پاسخ نامعتبر از سرویس پیامک دریافت شد."
+        logger.exception(
+            "Invalid response from SMS provider."
         )
 
-    # ------------------------------------------
-    # Melipayamak successful response
-    # ------------------------------------------
+        raise ValidationError(
+            "ارسال پیامک انجام نشد. لطفاً دوباره تلاش کنید."
+        )
 
     if result.get("recId"):
         return result
 
-    # ------------------------------------------
-    # SMS provider error
-    # ------------------------------------------
-
-    status = result.get("status")
-
-    if status:
-        raise ValidationError(
-            f"خطا در ارسال پیامک: {status}"
-        )
+    logger.error(
+        "SMS provider rejected OTP request. Response: %s",
+        result,
+    )
 
     raise ValidationError(
-        "ارسال پیامک توسط سرویس تایید نشد."
+        "ارسال پیامک انجام نشد. لطفاً دوباره تلاش کنید."
     )

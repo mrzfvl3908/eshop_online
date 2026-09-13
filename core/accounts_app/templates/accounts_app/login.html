@@ -61,10 +61,11 @@
                             {% endfor %}
 
                         </div>
-                    <br/>
+                        <br/>
 
 
                         <!-- Password -->
+
                         <div class="control-group">
 
                             <div style="position: relative;">
@@ -76,17 +77,17 @@
                                         onclick="togglePassword()"
                                         id="togglePasswordButton"
                                         style="
-                                        position: absolute;
-                                        top: 50%;
-                                        right: 10px;
-                                        transform: translateY(-50%);
-                                        border: none;
-                                        background: transparent;
-                                        cursor: pointer;
-                                        padding: 5px;
-                                        color: #6c757d;
-                                        font-size: 18px;
-                                    "
+                position: absolute;
+                top: 50%;
+                right: 10px;
+                transform: translateY(-50%);
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                padding: 5px;
+                color: #6c757d;
+                font-size: 18px;
+            "
                                         aria-label="Show password"
                                 >
                                     👁
@@ -95,12 +96,45 @@
                             </div>
 
                             {% for error in form.password.errors %}
+
                                 <p class="alert alert-danger mt-2">
                                     {{ error }}
                                 </p>
+
                             {% endfor %}
 
                         </div>
+
+
+                        <!-- Remember Me -->
+
+                        <div class="form-check mt-3">
+
+                            {{ form.remember_me }}
+
+                            <label
+                                    class="form-check-label"
+                                    for="{{ form.remember_me.id_for_label }}"
+                            >
+                                Remember me
+                            </label>
+
+                        </div>
+
+
+                        <!-- Forgot Password -->
+
+                        <div class="text-right mt-2">
+
+                            <a
+                                    href="{% url 'accounts_app:forgot_password' %}"
+                                    class="text-primary"
+                            >
+                                Forgot Password?
+                            </a>
+
+                        </div>
+
                         <br/>
 
                         <!-- Login Button -->

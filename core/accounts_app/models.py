@@ -1,55 +1,48 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 
-
-# ==================================================
-# User Manager
-# ==================================================
 
 class UserManager(BaseUserManager):
 
     def create_user(self, phone, password=None, **extra_fields):
         if not phone:
-            raise ValueError(
-                "Users must have a phone number"
-            )
+            raise ValueError("Users must have a phone number")
 
         user = self.model(
             phone=phone,
             **extra_fields
         )
 
-        user.set_password(password)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
 
-        user.save(
-            using=self._db
-        )
+        user.save(using=self._db)
 
         return user
 
     def create_superuser(self, phone, password=None, **extra_fields):
-        user = self.create_user(
+
+        extra_fields.setdefault("is_admin", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_admin") is not True:
+            raise ValueError("Superuser must have is_admin=True.")
+
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(
             phone=phone,
             password=password,
             **extra_fields
         )
 
-        user.is_admin = True
-        user.is_active = True
 
-        user.save(
-            using=self._db
-        )
-
-        return user
-
-
-# ==================================================
-# User
-# ==================================================
-
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name="ایمیل",
         max_length=255,
@@ -87,26 +80,15 @@ class User(AbstractBaseUser):
 
     class Meta:
         verbose_name = "کاربر"
-
         verbose_name_plural = "کاربران"
 
     def __str__(self):
         return self.phone
 
-    def has_perm(self, perm, obj=None):
-        return self.is_admin
-
-    def has_module_perms(self, app_label):
-        return self.is_admin
-
     @property
     def is_staff(self):
         return self.is_admin
 
-
-# ==================================================
-# Registration Verification
-# ==================================================
 
 class RegistrationVerification(models.Model):
     fullname = models.CharField(
@@ -127,30 +109,25 @@ class RegistrationVerification(models.Model):
         verbose_name="ایمیل"
     )
 
-    # رمز عبور کاربر قبل از تکمیل ثبت نام
     password_hash = models.CharField(
         max_length=255,
         verbose_name="رمز عبور هش شده"
     )
 
-    # OTP به صورت Hash ذخیره می‌شود
     code_hash = models.CharField(
         max_length=255,
         verbose_name="کد تایید هش شده"
     )
 
-    # زمان انقضای OTP
     expires_at = models.DateTimeField(
         verbose_name="زمان انقضا"
     )
 
-    # تعداد تلاش برای وارد کردن OTP
     attempts = models.PositiveIntegerField(
         default=0,
         verbose_name="تعداد تلاش"
     )
 
-    # آخرین زمان ارسال OTP
     last_sent_at = models.DateTimeField(
         default=timezone.now,
         verbose_name="آخرین ارسال"
@@ -168,8 +145,63 @@ class RegistrationVerification(models.Model):
 
     class Meta:
         verbose_name = "تایید ثبت نام"
-
         verbose_name_plural = "تاییدهای ثبت نام"
+        indexes = [
+            models.Index(fields=["phone"]),
+            models.Index(fields=["expires_at"]),
+        ]
+
+    def __str__(self):
+        return self.phone
+
+    @property
+    def is_expired(self):
+        return timezone.now() >= self.expires_at
+
+
+class PasswordResetVerification(models.Model):
+    phone = models.CharField(
+        max_length=11,
+        unique=True,
+        verbose_name="شماره تلفن"
+    )
+
+    code_hash = models.CharField(
+        max_length=255,
+        verbose_name="کد تایید هش شده"
+    )
+
+    expires_at = models.DateTimeField(
+        verbose_name="زمان انقضا"
+    )
+
+    attempts = models.PositiveIntegerField(
+        default=0,
+        verbose_name="تعداد تلاش"
+    )
+
+    last_sent_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="آخرین ارسال"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="تاریخ ایجاد"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="آخرین بروزرسانی"
+    )
+
+    class Meta:
+        verbose_name = "بازیابی رمز عبور"
+        verbose_name_plural = "بازیابی‌های رمز عبور"
+        indexes = [
+            models.Index(fields=["phone"]),
+            models.Index(fields=["expires_at"]),
+        ]
 
     def __str__(self):
         return self.phone
