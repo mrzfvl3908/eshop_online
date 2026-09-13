@@ -1,0 +1,829 @@
+{#{% extends 'base.html' %}#}
+{##}
+{#{% block title %}#}
+{#    Verify Phone#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{##}
+{#    <!-- ========================================= -->#}
+{#    <!-- Breadcrumb -->#}
+{#    <!-- ========================================= -->#}
+{##}
+{#    <div class="container-fluid">#}
+{##}
+{#        <div class="row px-xl-5">#}
+{##}
+{#            <div class="col-12">#}
+{##}
+{#                <nav class="breadcrumb bg-light mb-30">#}
+{##}
+{#                    <a#}
+{#                            class="breadcrumb-item text-dark"#}
+{#                            href="{% url 'home_app:home' %}"#}
+{#                    >#}
+{#                        Home#}
+{#                    </a>#}
+{##}
+{#                    <span class="breadcrumb-item active">#}
+{#                    Verify Phone#}
+{#                </span>#}
+{##}
+{#                </nav>#}
+{##}
+{#            </div>#}
+{##}
+{#        </div>#}
+{##}
+{#    </div>#}
+{##}
+{##}
+{#    <!-- ========================================= -->#}
+{#    <!-- Verify Content -->#}
+{#    <!-- ========================================= -->#}
+{##}
+{#    <div class="container-fluid">#}
+{##}
+{#        <h2#}
+{#                class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4"#}
+{#        >#}
+{#        <span class="bg-secondary pr-3">#}
+{#            Verify Phone#}
+{#        </span>#}
+{#        </h2>#}
+{##}
+{##}
+{#        <div class="px-xl-5">#}
+{##}
+{#            <div class="mb-5 contact-us">#}
+{##}
+{#                <div class="contact-form bg-light p-30">#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- Phone Number -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <div class="text-center mb-4">#}
+{##}
+{#                        <p>#}
+{#                            کد تأیید به شماره زیر ارسال شده است:#}
+{#                        </p>#}
+{##}
+{#                        <strong>#}
+{#                            {{ phone }}#}
+{#                        </strong>#}
+{##}
+{#                    </div>#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- Messages -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    {% if messages %}#}
+{##}
+{#                        {% for message in messages %}#}
+{##}
+{#                            <div class="alert alert-{{ message.tags }}">#}
+{#                                {{ message }}#}
+{#                            </div>#}
+{##}
+{#                        {% endfor %}#}
+{##}
+{#                    {% endif %}#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- OTP Verification Form -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <form#}
+{#                            method="POST"#}
+{#                            action="{% url 'accounts_app:verify' %}"#}
+{#                    >#}
+{##}
+{#                        {% csrf_token %}#}
+{##}
+{##}
+{#                        <!-- Form Non Field Errors -->#}
+{##}
+{#                        {% for error in form.non_field_errors %}#}
+{##}
+{#                            <p class="alert alert-danger">#}
+{#                                {{ error }}#}
+{#                            </p>#}
+{##}
+{#                        {% endfor %}#}
+{##}
+{##}
+{#                        <!-- OTP Code -->#}
+{##}
+{#                        <div class="control-group">#}
+{##}
+{#                            <label for="{{ form.code.id_for_label }}">#}
+{#                                Verification Code#}
+{#                            </label>#}
+{##}
+{#                            {{ form.code }}#}
+{##}
+{##}
+{#                            <!-- OTP Errors -->#}
+{##}
+{#                            {% for error in form.code.errors %}#}
+{##}
+{#                                <p class="alert alert-danger mt-2">#}
+{#                                    {{ error }}#}
+{#                                </p>#}
+{##}
+{#                            {% endfor %}#}
+{##}
+{#                        </div>#}
+{##}
+{##}
+{#                        <br>#}
+{##}
+{##}
+{#                        <!-- Verify Button -->#}
+{##}
+{#                        <button#}
+{#                                type="submit"#}
+{#                                class="btn btn-primary py-2 px-4 w-100"#}
+{#                                id="verify-button"#}
+{#                        >#}
+{#                            تأیید کد#}
+{#                        </button>#}
+{##}
+{#                    </form>#}
+{##}
+{##}
+{#                    <hr class="my-4">#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- OTP Timer -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <div class="text-center mb-3">#}
+{##}
+{#                        <p class="mb-1">#}
+{#                            زمان باقی‌مانده:#}
+{#                        </p>#}
+{##}
+{#                        <h3#}
+{#                                id="otp-timer"#}
+{#                                class="font-weight-bold"#}
+{#                        >#}
+{#                            00:00#}
+{#                        </h3>#}
+{##}
+{#                    </div>#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- Resend OTP Form -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <form#}
+{#                            method="POST"#}
+{#                            action="{% url 'accounts_app:resend_otp' %}"#}
+{#                            id="resend-form"#}
+{#                    >#}
+{##}
+{#                        {% csrf_token %}#}
+{##}
+{##}
+{#                        <button#}
+{#                                type="submit"#}
+{#                                class="btn btn-secondary py-2 px-4 w-100"#}
+{#                                id="resend-button"#}
+{#                                {% if not can_resend %}#}
+{#                                disabled#}
+{#                                {% endif %}#}
+{#                        >#}
+{#                            ارسال مجدد کد#}
+{#                        </button>#}
+{##}
+{#                    </form>#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- Resend Message -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <p#}
+{#                            id="resend-message"#}
+{#                            class="text-center text-muted mt-3"#}
+{#                    >#}
+{##}
+{#                        {% if not can_resend %}#}
+{##}
+{#                            تا پایان زمان اعتبار کد منتظر بمانید.#}
+{##}
+{#                        {% else %}#}
+{##}
+{#                            کد قبلی منقضی شده است.#}
+{#                            اکنون می‌توانید کد جدید درخواست کنید.#}
+{##}
+{#                        {% endif %}#}
+{##}
+{#                    </p>#}
+{##}
+{##}
+{#                    <!-- ========================================= -->#}
+{#                    <!-- Back To Login -->#}
+{#                    <!-- ========================================= -->#}
+{##}
+{#                    <div class="text-center mt-3">#}
+{##}
+{#                        <a#}
+{#                                href="{% url 'accounts_app:login' %}"#}
+{#                        >#}
+{#                            بازگشت به صفحه ورود#}
+{#                        </a>#}
+{##}
+{#                    </div>#}
+{##}
+{##}
+{#                </div>#}
+{##}
+{#            </div>#}
+{##}
+{#        </div>#}
+{##}
+{#    </div>#}
+{##}
+{##}
+{#    <!-- ========================================= -->#}
+{#    <!-- OTP Timer JavaScript -->#}
+{#    <!-- ========================================= -->#}
+{##}
+{#    <script>#}
+{##}
+{#    document.addEventListener(#}
+{#        "DOMContentLoaded",#}
+{#        function () {#}
+{##}
+{#            // =========================================#}
+{#            // دریافت زمان باقی مانده از Django#}
+{#            // =========================================#}
+{##}
+{#            let remainingSeconds = Number(#}
+{#                "{{ remaining_seconds|default:0 }}"#}
+{#            );#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // دریافت عناصر HTML#}
+{#            // =========================================#}
+{##}
+{#            const timerElement =#}
+{#                document.getElementById("otp-timer");#}
+{##}
+{#            const resendButton =#}
+{#                document.getElementById("resend-button");#}
+{##}
+{#            const resendMessage =#}
+{#                document.getElementById("resend-message");#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // متغیر تایمر#}
+{#            // =========================================#}
+{##}
+{#            let timer = null;#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // فعال کردن ارسال مجدد#}
+{#            // =========================================#}
+{##}
+{#            function enableResend() {#}
+{##}
+{#                timerElement.textContent = "00:00";#}
+{##}
+{#                resendButton.disabled = false;#}
+{##}
+{#                resendMessage.textContent =#}
+{#                    "کد قبلی منقضی شده است. اکنون می‌توانید کد جدید درخواست کنید.";#}
+{##}
+{#            }#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // نمایش زمان#}
+{#            // =========================================#}
+{##}
+{#            function updateTimer() {#}
+{##}
+{#                // -----------------------------------------#}
+{#                // اگر زمان تمام شده باشد#}
+{#                // -----------------------------------------#}
+{##}
+{#                if (remainingSeconds <= 0) {#}
+{##}
+{#                    remainingSeconds = 0;#}
+{##}
+{#                    enableResend();#}
+{##}
+{#                    if (timer !== null) {#}
+{##}
+{#                        clearInterval(timer);#}
+{##}
+{#                        timer = null;#}
+{##}
+{#                    }#}
+{##}
+{#                    return;#}
+{##}
+{#                }#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // محاسبه دقیقه#}
+{#                // -----------------------------------------#}
+{##}
+{#                const minutes = Math.floor(#}
+{#                    remainingSeconds / 60#}
+{#                );#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // محاسبه ثانیه#}
+{#                // -----------------------------------------#}
+{##}
+{#                const seconds =#}
+{#                    remainingSeconds % 60;#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // فرمت دو رقمی دقیقه#}
+{#                // -----------------------------------------#}
+{##}
+{#                const formattedMinutes =#}
+{#                    String(minutes).padStart(2, "0");#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // فرمت دو رقمی ثانیه#}
+{#                // -----------------------------------------#}
+{##}
+{#                const formattedSeconds =#}
+{#                    String(seconds).padStart(2, "0");#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // نمایش زمان#}
+{#                // -----------------------------------------#}
+{##}
+{#                timerElement.textContent =#}
+{#                    formattedMinutes#}
+{#                    + ":"#}
+{#                    + formattedSeconds;#}
+{##}
+{##}
+{#                // -----------------------------------------#}
+{#                // کم کردن یک ثانیه#}
+{#                // -----------------------------------------#}
+{##}
+{#                remainingSeconds--;#}
+{##}
+{#            }#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // وضعیت اولیه دکمه#}
+{#            // =========================================#}
+{##}
+{#            if (remainingSeconds <= 0) {#}
+{##}
+{#                enableResend();#}
+{##}
+{#                return;#}
+{##}
+{#            }#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // نمایش اولیه#}
+{#            // =========================================#}
+{##}
+{#            updateTimer();#}
+{##}
+{##}
+{#            // =========================================#}
+{#            // شروع تایمر#}
+{#            // =========================================#}
+{##}
+{#            timer = setInterval(#}
+{#                function () {#}
+{##}
+{#                    updateTimer();#}
+{##}
+{#                },#}
+{#                1000#}
+{#            );#}
+{##}
+{#        }#}
+{##}
+{#    );#}
+{##}
+{#</script>#}
+{##}
+{#{% endblock %}#}
+{##}
+{% extends 'base.html' %}
+
+{% block title %}
+    Verify Phone
+{% endblock %}
+
+{% block content %}
+
+    <!-- ========================================= -->
+    <!-- Breadcrumb -->
+    <!-- ========================================= -->
+
+    <div class="container-fluid">
+
+        <div class="row px-xl-5">
+
+            <div class="col-12">
+
+                <nav class="breadcrumb bg-light mb-30">
+
+                    <a
+                            class="breadcrumb-item text-dark"
+                            href="{% url 'home_app:home' %}"
+                    >
+                        Home
+                    </a>
+
+                    <span class="breadcrumb-item active">
+                    Verify Phone
+                </span>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- Verify -->
+    <!-- ========================================= -->
+
+    <div class="container-fluid">
+
+        <h2
+                class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4"
+        >
+        <span class="bg-secondary pr-3">
+            Verify Phone
+        </span>
+        </h2>
+
+
+        <div class="px-xl-5">
+
+            <div class="mb-5 contact-us">
+
+                <div class="contact-form bg-light p-30">
+
+
+                    <!-- ========================================= -->
+                    <!-- Phone -->
+                    <!-- ========================================= -->
+
+                    <div class="text-center mb-4">
+
+                        <p>
+                            کد تأیید به شماره زیر ارسال شده است:
+                        </p>
+
+                        <strong>
+                            {{ phone }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ========================================= -->
+                    <!-- Messages -->
+                    <!-- ========================================= -->
+
+                    {% if messages %}
+
+                        {% for message in messages %}
+
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+
+                    <!-- ========================================= -->
+                    <!-- Verification Form -->
+                    <!-- ========================================= -->
+
+                    <form
+                            method="POST"
+                            action="{% url 'accounts_app:verify' %}"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <!-- General Errors -->
+
+                        {% for error in form.non_field_errors %}
+
+                            <div class="alert alert-danger">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+
+                        <!-- OTP -->
+
+                        <div class="control-group">
+
+                            <label for="{{ form.code.id_for_label }}">
+                                Verification Code
+                            </label>
+
+                            {{ form.code }}
+
+                            {% for error in form.code.errors %}
+
+                                <p class="alert alert-danger mt-2">
+                                    {{ error }}
+                                </p>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <br>
+
+
+                        <!-- Verify -->
+
+                        <button
+                                type="submit"
+                                class="btn btn-primary py-2 px-4 w-100"
+                                id="verify-button"
+                        >
+                            تأیید کد
+                        </button>
+
+                    </form>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- ========================================= -->
+                    <!-- Timer -->
+                    <!-- ========================================= -->
+
+                    <div class="text-center mb-3">
+
+                        <p class="mb-1">
+                            زمان باقی‌مانده:
+                        </p>
+
+                        <h3
+                                id="otp-timer"
+                                class="font-weight-bold"
+                        >
+                            00:00
+                        </h3>
+
+                    </div>
+
+
+                    <!-- ========================================= -->
+                    <!-- Resend -->
+                    <!-- ========================================= -->
+
+                    <form
+                            method="POST"
+                            action="{% url 'accounts_app:resend_otp' %}"
+                            id="resend-form"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                                type="submit"
+                                class="btn btn-secondary py-2 px-4 w-100"
+                                id="resend-button"
+                                {% if not can_resend %}
+                                disabled
+                                {% endif %}
+                        >
+                            ارسال مجدد کد
+                        </button>
+
+                    </form>
+
+
+                    <!-- ========================================= -->
+                    <!-- Timer Message -->
+                    <!-- ========================================= -->
+
+                    <p
+                            id="resend-message"
+                            class="text-center text-muted mt-3"
+                    >
+
+                        {% if can_resend %}
+
+                            کد قبلی منقضی شده است.
+                            اکنون می‌توانید کد جدید درخواست کنید.
+
+                        {% else %}
+
+                            تا پایان زمان اعتبار کد منتظر بمانید.
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <!-- ========================================= -->
+                    <!-- Back Login -->
+                    <!-- ========================================= -->
+
+                    <div class="text-center mt-3">
+
+                        <a
+                                href="{% url 'accounts_app:login' %}"
+                        >
+                            بازگشت به صفحه ورود
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- Timer JavaScript -->
+    <!-- ========================================= -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                let remainingSeconds = Number(
+                    "{{ remaining_seconds|default:0 }}"
+                );
+
+
+                const timerElement =
+                    document.getElementById("otp-timer");
+
+                const resendButton =
+                    document.getElementById("resend-button");
+
+                const resendMessage =
+                    document.getElementById("resend-message");
+
+                const resendForm =
+                    document.getElementById("resend-form");
+
+
+                let timer = null;
+
+
+                // =========================================
+                // Enable Resend
+                // =========================================
+
+                function enableResend() {
+
+                    remainingSeconds = 0;
+
+                    timerElement.textContent = "00:00";
+
+                    resendButton.disabled = false;
+
+                    resendMessage.textContent =
+                        "کد قبلی منقضی شده است. اکنون می‌توانید کد جدید درخواست کنید.";
+
+                }
+
+
+                // =========================================
+                // Update Timer
+                // =========================================
+
+                function updateTimer() {
+
+                    if (remainingSeconds <= 0) {
+
+                        enableResend();
+
+                        if (timer !== null) {
+
+                            clearInterval(timer);
+
+                            timer = null;
+                        }
+
+                        return;
+                    }
+
+
+                    const minutes =
+                        Math.floor(
+                            remainingSeconds / 60
+                        );
+
+
+                    const seconds =
+                        remainingSeconds % 60;
+
+
+                    const formattedMinutes =
+                        String(minutes).padStart(2, "0");
+
+
+                    const formattedSeconds =
+                        String(seconds).padStart(2, "0");
+
+
+                    timerElement.textContent =
+                        formattedMinutes
+                        + ":"
+                        + formattedSeconds;
+
+
+                    remainingSeconds--;
+                }
+
+
+                // =========================================
+                // Initial State
+                // =========================================
+
+                if (remainingSeconds <= 0) {
+
+                    enableResend();
+
+                } else {
+
+                    updateTimer();
+
+                    timer = setInterval(
+                        updateTimer,
+                        1000
+                    );
+                }
+
+
+                // =========================================
+                // Prevent Double Resend Click
+                // =========================================
+
+                resendForm.addEventListener(
+                    "submit",
+                    function () {
+
+                        if (resendButton.disabled) {
+
+                            return;
+                        }
+
+                        resendButton.disabled = true;
+
+                        resendButton.textContent =
+                            "در حال ارسال...";
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+{% endblock %}

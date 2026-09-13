@@ -4,84 +4,162 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+
 from accounts_app.models import User
 
 
-class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required
-    fields, plus a repeated password."""
+# =========================================================
+# فرم ساخت کاربر جدید در پنل Admin
+# =========================================================
 
-    password1 = forms.CharField(label="گذرواژه", widget=forms.PasswordInput)
+class UserCreationForm(forms.ModelForm):
+    password1 = forms.CharField(
+        label="گذرواژه",
+        widget=forms.PasswordInput
+    )
+
     password2 = forms.CharField(
-        label="تکرار گذرواژه", widget=forms.PasswordInput
+        label="تکرار گذرواژه",
+        widget=forms.PasswordInput
     )
 
     class Meta:
         model = User
-        fields = ["phone",]
+        fields = [
+            "phone",
+            "fullname",
+            "email",
+        ]
 
     def clean_password2(self):
-        # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
+
         if password1 and password2 and password1 != password2:
-            raise ValidationError("Passwords don't match")
+            raise ValidationError("گذرواژه‌ها یکسان نیستند.")
+
         return password2
 
     def save(self, commit=True):
-        # Save the provided password in hashed format
         user = super().save(commit=False)
+
+        # رمز عبور را Hash می‌کنیم
         user.set_password(self.cleaned_data["password1"])
+
         if commit:
             user.save()
+
         return user
 
 
-class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Includes all the fields on
-    the user, but replaces the password field with admin's
-    disabled password hash display field.
-    """
+# =========================================================
+# فرم ویرایش کاربر در Admin
+# =========================================================
 
-    password = ReadOnlyPasswordHashField()
+class UserChangeForm(forms.ModelForm):
+    password = ReadOnlyPasswordHashField(
+        label="گذرواژه"
+    )
 
     class Meta:
         model = User
-        fields = ["phone", "password", "is_active", "is_admin"]
+        fields = [
+            "phone",
+            "fullname",
+            "email",
+            "password",
+            "is_active",
+            "is_admin",
+        ]
 
+
+# =========================================================
+# تنظیمات User در Admin
+# =========================================================
 
 class UserAdmin(BaseUserAdmin):
-    # The forms to add and change user instances
     form = UserChangeForm
+    add_form = UserCreationForm
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
-    list_display = ["phone","email",'fullname', "is_admin","is_active"]
-    list_filter = ["is_admin","is_active"]
-    fieldsets = [
-        (None, {"fields": ["phone", "password"]}),
-        ("اطلاعات شخصی", {"fields": ["fullname"]}),
-        ("دسترسی ها", {"fields": ["is_admin","is_active"]}),
+    list_display = [
+        "phone",
+        "fullname",
+        "email",
+        "is_admin",
+        "is_active",
     ]
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
-    # overrides get_fieldsets to use this attribute when creating a user.
+
+    list_filter = [
+        "is_admin",
+        "is_active",
+    ]
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    "phone",
+                    "password",
+                ]
+            },
+        ),
+
+        (
+            "اطلاعات شخصی",
+            {
+                "fields": [
+                    "fullname",
+                    "email",
+                ]
+            },
+        ),
+
+        (
+            "دسترسی‌ها",
+            {
+                "fields": [
+                    "is_admin",
+                    "is_active",
+                ]
+            },
+        ),
+    ]
+
     add_fieldsets = [
         (
             None,
             {
                 "classes": ["wide"],
-                "fields": ["phone","fullname", "password1", "password2"],
+                "fields": [
+                    "phone",
+                    "fullname",
+                    "email",
+                    "password1",
+                    "password2",
+                ],
             },
         ),
     ]
-    search_fields = ["phone"]
-    ordering = ["phone"]
+
+    search_fields = [
+        "phone",
+        "fullname",
+        "email",
+    ]
+
+    ordering = [
+        "phone",
+    ]
+
     filter_horizontal = []
 
 
-# Now register the new UserAdmin...
+# =========================================================
+# ثبت User در Admin
+# =========================================================
+
 admin.site.register(User, UserAdmin)
-# ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
+
+# چون از سیستم Permission/Group پیش‌فرض Django استفاده نمی‌کنیم
 admin.site.unregister(Group)

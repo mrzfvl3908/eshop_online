@@ -13,14 +13,67 @@
         <div class="col-lg-6 text-center text-lg-right">
             <div class="d-inline-flex align-items-center">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My
-                        Account
+
+                    <button
+                            type="button"
+                            class="btn btn-sm btn-light dropdown-toggle"
+                            data-toggle="dropdown"
+                    >
+                        My Account
                     </button>
+
                     <div class="dropdown-menu dropdown-menu-right">
-                        <button class="dropdown-item" type="button"><a href="{% url 'accounts_app:login' %}">Sign in</a></button>
-                        <button class="dropdown-item" type="button"><a href="">Sign up</a></button>
+
+                        {% if request.user.is_authenticated %}
+
+                            <!-- Profile -->
+                            <a
+                                    class="dropdown-item"
+                                    href=""
+                            >
+                                Profile
+                            </a>
+
+                            <!-- Logout -->
+                            <form
+                                    method="post"
+                                    action="{% url 'accounts_app:logout' %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                        type="submit"
+                                        class="dropdown-item"
+                                >
+                                    Logout
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <!-- Login -->
+                            <a
+                                    class="dropdown-item"
+                                    href="{% url 'accounts_app:login' %}"
+                            >
+                                Sign in
+                            </a>
+
+                            <!-- Register -->
+                            <a
+                                    class="dropdown-item"
+                                    href="{% url 'accounts_app:register' %}"
+                            >
+                                Sign up
+                            </a>
+
+                        {% endif %}
+
                     </div>
+
                 </div>
+
             </div>
             <div class="d-inline-flex align-items-center d-block d-lg-none">
                 <a href="" class="btn px-0 ml-2">
@@ -108,7 +161,8 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="{% url 'home_app:home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                        <a href="{% url 'home_app:home' %}"
+                           class="nav-item nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
                         <a href="shop.html" class="nav-item nav-link">Shop</a>
                         <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                         <div class="nav-item dropdown">
