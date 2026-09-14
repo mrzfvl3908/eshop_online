@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
-
 from .forms import ReviewForm
 from .models import Product
 
@@ -13,7 +12,7 @@ class ProductListView(ListView):
     model = Product
     template_name = 'product_app/product_list.html'
     context_object_name = 'products'
-    paginate_by = 9
+    paginate_by = 10
 
     def get_queryset(self):
 
