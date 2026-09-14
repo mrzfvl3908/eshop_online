@@ -1,0 +1,1789 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+
+{% block title %}
+    {{ product.title }}
+{% endblock %}
+
+
+{% block content %}
+
+
+    <!-- ============================================================= -->
+    <!-- BREADCRUMB -->
+    <!-- ============================================================= -->
+
+    <div class="container-fluid">
+
+        <div class="row px-xl-5">
+
+            <div class="col-12">
+
+                <nav class="breadcrumb bg-light mb-30">
+
+                    <a
+                            class="breadcrumb-item text-dark"
+                            href="{% url 'home_app:home' %}"
+                    >
+                        Home
+                    </a>
+
+                    <a
+                            class="breadcrumb-item text-dark"
+                            href="{% url 'product_app:product-list' %}"
+                    >
+                        Products
+                    </a>
+
+                    <span class="breadcrumb-item active">
+                    {{ product.title }}
+                </span>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================= -->
+    <!-- PRODUCT DETAIL -->
+    <!-- ============================================================= -->
+
+    <div class="container-fluid pb-5">
+
+        <div class="row px-xl-5">
+
+
+            <!-- ===================================================== -->
+            <!-- PRODUCT IMAGE -->
+            <!-- ===================================================== -->
+
+            <div class="col-lg-5 mb-30">
+
+                <div class="bg-light p-4">
+
+                    <div
+                            class="product-detail-image"
+                            style="height: 450px;"
+                    >
+
+                        {% if product.image %}
+
+                            <img
+                                    src="{{ product.image.url }}"
+                                    alt="{{ product.title }}"
+                                    class="img-fluid w-100 h-100"
+                                    style="object-fit: contain;"
+                            >
+
+                        {% else %}
+
+                            <img
+                                    src="{% static 'img/no-image.jpg' %}"
+                                    alt="No image"
+                                    class="img-fluid w-100 h-100"
+                                    style="object-fit: contain;"
+                            >
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================================== -->
+            <!-- PRODUCT INFORMATION -->
+            <!-- ===================================================== -->
+
+            <div class="col-lg-7">
+
+                <div class="bg-light p-30 h-100">
+
+
+                    <!-- TITLE -->
+
+                    <h3 class="font-weight-semi-bold mb-3">
+                        {{ product.title }}
+                    </h3>
+
+
+                    <!-- REVIEW SUMMARY -->
+
+                    <div class="d-flex align-items-center mb-4">
+
+                        <div class="text-primary mr-3">
+
+                            {% if review_count %}
+
+                                {% for i in "12345" %}
+
+                                    {% if forloop.counter <= review_average %}
+
+                                        <i class="fa fa-star"></i>
+
+                                    {% else %}
+
+                                        <i class="far fa-star"></i>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <small class="text-muted">
+
+                            {% if review_count %}
+
+                                {{ review_average }}/5
+                                ({{ review_count }} reviews)
+
+                            {% else %}
+
+                                No reviews yet
+
+                            {% endif %}
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- PRICE -->
+
+                    <div class="mb-4">
+
+                        {% if product.discount > 0 %}
+
+                            <div class="d-flex align-items-center">
+
+                                <h3 class="font-weight-semi-bold mb-0">
+
+                                    {{ product.final_price }}
+
+                                </h3>
+
+                                <h5 class="text-muted ml-3 mb-0">
+
+                                    <del>
+                                        {{ product.price }}
+                                    </del>
+
+                                </h5>
+
+                                <span class="badge badge-danger ml-3">
+
+                                {{ product.discount }}% OFF
+
+                            </span>
+
+                            </div>
+
+                        {% else %}
+
+                            <h3 class="font-weight-semi-bold mb-0">
+
+                                {{ product.price }}
+
+                            </h3>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <p class="mb-4">
+
+                        {{ product.description|truncatewords:45 }}
+
+                    </p>
+
+
+                    <!-- CATEGORY -->
+
+                    {% if product.category.all %}
+
+                        <div class="mb-4">
+
+                            <strong class="text-dark mr-3">
+                                Categories:
+                            </strong>
+
+                            {% for category in product.category.all %}
+
+                                <a
+                                        href="{% url 'product_app:product-list' %}"
+                                        class="text-muted"
+                                >
+                                    {{ category.name }}
+                                </a>
+
+                                {% if not forloop.last %}
+                                    ,
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- SIZE -->
+
+                    {% if product.size.all %}
+
+                        <div class="d-flex align-items-center mb-4">
+
+                            <strong class="text-dark mr-3">
+                                Size:
+                            </strong>
+
+                            <div>
+
+                                {% for size in product.size.all %}
+
+                                    <div
+                                            class="custom-control custom-radio custom-control-inline"
+                                    >
+
+                                        <input
+                                                type="radio"
+                                                class="custom-control-input"
+                                                id="size-{{ size.id }}"
+                                                name="size"
+                                                value="{{ size.id }}"
+                                        >
+
+                                        <label
+                                                class="custom-control-label"
+                                                for="size-{{ size.id }}"
+                                        >
+                                            {{ size.title }}
+                                        </label>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- COLOR -->
+
+                    {% if product.color.all %}
+
+                        <div class="d-flex align-items-center mb-4">
+
+                            <strong class="text-dark mr-3">
+                                Color:
+                            </strong>
+
+                            <div>
+
+                                {% for color in product.color.all %}
+
+                                    <div
+                                            class="custom-control custom-radio custom-control-inline"
+                                    >
+
+                                        <input
+                                                type="radio"
+                                                class="custom-control-input"
+                                                id="color-{{ color.id }}"
+                                                name="color"
+                                                value="{{ color.id }}"
+                                        >
+
+                                        <label
+                                                class="custom-control-label"
+                                                for="color-{{ color.id }}"
+                                        >
+                                            {{ color.title }}
+                                        </label>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- ================================================= -->
+                    <!-- QUANTITY + CART -->
+                    <!-- ================================================= -->
+
+                    <div class="d-flex align-items-center pt-2">
+
+                        <div
+                                class="input-group quantity mr-3"
+                                style="width: 130px;"
+                        >
+
+                            <div class="input-group-btn">
+
+                                <button
+                                        type="button"
+                                        class="btn btn-primary product-quantity-minus"
+                                >
+
+                                    <i class="fa fa-minus"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <input
+                                    type="text"
+                                    class="form-control bg-secondary border-0 text-center"
+                                    value="1"
+                                    id="product-quantity"
+                                    readonly
+                            >
+
+
+                            <div class="input-group-btn">
+
+                                <button
+                                        type="button"
+                                        class="btn btn-primary product-quantity-plus"
+                                >
+
+                                    <i class="fa fa-plus"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                                type="button"
+                                class="btn btn-primary px-4"
+                                id="add-to-cart"
+                        >
+
+                            <i class="fa fa-shopping-cart mr-2"></i>
+
+                            Add To Cart
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ============================================================= -->
+        <!-- DESCRIPTION / INFORMATION / REVIEWS -->
+        <!-- ============================================================= -->
+
+        <div class="row px-xl-5 mt-5">
+
+            <div class="col">
+
+                <div class="bg-light p-30">
+
+
+                    <!-- ================================================= -->
+                    <!-- TABS -->
+                    <!-- ================================================= -->
+
+                    <div class="nav nav-tabs mb-4">
+
+                        <a
+                                class="nav-item nav-link text-dark active"
+                                data-toggle="tab"
+                                href="#tab-description"
+                        >
+                            Description
+                        </a>
+
+
+                        <a
+                                class="nav-item nav-link text-dark"
+                                data-toggle="tab"
+                                href="#tab-information"
+                        >
+                            Information
+                        </a>
+
+
+                        <a
+                                class="nav-item nav-link text-dark"
+                                data-toggle="tab"
+                                href="#reviews"
+                        >
+                            Reviews ({{ review_count }})
+                        </a>
+
+                    </div>
+
+
+                    <div class="tab-content">
+
+
+                        <!-- ================================================= -->
+                        <!-- DESCRIPTION -->
+                        <!-- ================================================= -->
+
+                        <div
+                                class="tab-pane fade show active"
+                                id="tab-description"
+                        >
+
+                            <h4 class="mb-4">
+                                Product Description
+                            </h4>
+
+                            <div class="text-muted">
+
+                                {{ product.description|linebreaks }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- INFORMATION -->
+                        <!-- ================================================= -->
+
+                        <div
+                                class="tab-pane fade"
+                                id="tab-information"
+                        >
+
+                            <h4 class="mb-4">
+                                Product Information
+                            </h4>
+
+
+                            <div class="row">
+
+
+                                <div class="col-md-6">
+
+                                    <ul class="list-group list-group-flush">
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Product:
+                                            </strong>
+
+                                            {{ product.title }}
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Price:
+                                            </strong>
+
+                                            {{ product.price }}
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Discount:
+                                            </strong>
+
+                                            {{ product.discount }}%
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Final Price:
+                                            </strong>
+
+                                            {{ product.final_price }}
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <ul class="list-group list-group-flush">
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Category:
+                                            </strong>
+
+                                            {% for category in product.category.all %}
+
+                                                {{ category.name }}
+
+                                                {% if not forloop.last %}
+                                                    ,
+                                                {% endif %}
+
+                                            {% empty %}
+
+                                                -
+
+                                            {% endfor %}
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Size:
+                                            </strong>
+
+                                            {% for size in product.size.all %}
+
+                                                {{ size.title }}
+
+                                                {% if not forloop.last %}
+                                                    ,
+                                                {% endif %}
+
+                                            {% empty %}
+
+                                                -
+
+                                            {% endfor %}
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Color:
+                                            </strong>
+
+                                            {% for color in product.color.all %}
+
+                                                {{ color.title }}
+
+                                                {% if not forloop.last %}
+                                                    ,
+                                                {% endif %}
+
+                                            {% empty %}
+
+                                                -
+
+                                            {% endfor %}
+
+                                        </li>
+
+
+                                        <li
+                                                class="list-group-item px-0 bg-transparent"
+                                        >
+
+                                            <strong>
+                                                Status:
+                                            </strong>
+
+                                            {% if product.status %}
+
+                                                Available
+
+                                            {% else %}
+
+                                                Unavailable
+
+                                            {% endif %}
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- REVIEWS -->
+                        <!-- ================================================= -->
+
+                        <div
+                                class="tab-pane fade"
+                                id="reviews"
+                        >
+
+                            <div class="row">
+
+
+                                <!-- ================================================= -->
+                                <!-- REVIEW LIST -->
+                                <!-- ================================================= -->
+
+                                <div class="col-md-6">
+
+
+                                    <h4 class="mb-4">
+
+                                        {{ review_count }}
+                                        review{{ review_count|pluralize }}
+
+                                    </h4>
+
+
+                                    <div class="reviews-list">
+
+
+                                        {% for review in review_page %}
+
+
+                                            <!-- ================================= -->
+                                            <!-- SINGLE REVIEW -->
+                                            <!-- ================================= -->
+
+                                            <div class="review-item mb-4 pb-4 border-bottom">
+
+
+                                                <div class="media">
+
+
+                                                    <!-- ============================= -->
+                                                    <!-- USER AVATAR -->
+                                                    <!-- ============================= -->
+
+                                                    <div class="mr-3">
+
+                                                        {% if review.user.image %}
+
+                                                            <img
+                                                                    src="{{ review.user.image.url }}"
+                                                                    alt="{{ review.user.fullname }}"
+                                                                    class="rounded-circle"
+                                                                    width="55"
+                                                                    height="55"
+                                                                    style="object-fit: cover;"
+                                                            >
+
+                                                        {% else %}
+
+                                                            <div
+                                                                    class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                                                    style="
+                                                                width: 55px;
+                                                                height: 55px;
+                                                                min-width: 55px;
+                                                                font-size: 20px;
+                                                            "
+                                                            >
+
+{#                                                                {% if review.user.fullname %}#}
+{##}
+{#                                                                    {{ review.user.fullname }}#}
+{##}
+{#                                                                {% else %}#}
+{##}
+{#                                                                    {{ review.user.fullname }}#}
+{##}
+{#                                                                {% endif %}#}
+
+                                                            </div>
+
+                                                        {% endif %}
+
+                                                    </div>
+
+
+                                                    <!-- ============================= -->
+                                                    <!-- REVIEW CONTENT -->
+                                                    <!-- ============================= -->
+
+                                                    <div class="media-body">
+
+
+                                                        <!-- USER NAME -->
+
+                                                        <div class="mb-1">
+
+                                                            <h6 class="d-inline mb-0">
+
+                                                                {% if review.user.fullname %}
+
+                                                                    {{ review.user.fullname }}
+
+                                                                {% else %}
+
+                                                                    {{ review.user.fullname }}
+
+                                                                {% endif %}
+
+                                                            </h6>
+
+
+                                                            <!-- USERNAME -->
+{##}
+{#                                                            <small class="text-muted ml-2">#}
+{##}
+{#                                                                {{ review.user.fullname }}#}
+{##}
+{#                                                            </small>#}
+
+                                                        </div>
+
+
+                                                        <!-- DATE -->
+
+                                                        <small class="text-muted d-block mb-2">
+
+                                                            {{ review.created_at|naturaltime }}
+
+                                                        </small>
+
+
+                                                        <!-- RATING -->
+
+                                                        <div class="text-primary mb-2">
+
+                                                            {% for i in "12345" %}
+
+                                                                {% if forloop.counter <= review.rating %}
+
+                                                                    <i class="fa fa-star"></i>
+
+                                                                {% else %}
+
+                                                                    <i class="far fa-star"></i>
+
+                                                                {% endif %}
+
+                                                            {% endfor %}
+
+                                                        </div>
+
+
+                                                        <!-- COMMENT -->
+
+                                                        <p class="mb-0 review-comment">
+
+                                                            {{ review.comment|linebreaksbr }}
+
+                                                        </p>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+
+                                        {% empty %}
+
+
+                                            <!-- ================================= -->
+                                            <!-- EMPTY REVIEWS -->
+                                            <!-- ================================= -->
+
+                                            <div class="text-center py-5">
+
+                                                <i
+                                                        class="far fa-comment-alt fa-3x text-muted mb-3"
+                                                ></i>
+
+                                                <h5 class="mb-2">
+
+                                                    No reviews yet
+
+                                                </h5>
+
+                                                <p class="text-muted mb-0">
+
+                                                    Be the first to review this product.
+
+                                                </p>
+
+                                            </div>
+
+
+                                        {% endfor %}
+
+
+                                    </div>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- REVIEW PAGINATION -->
+                                    <!-- ================================================= -->
+
+                                    {% if review_page.has_other_pages %}
+
+                                        <nav class="mt-4">
+
+                                            <ul class="pagination">
+
+
+                                                {% if review_page.has_previous %}
+
+                                                    <li class="page-item">
+
+                                                        <a
+                                                                class="page-link"
+                                                                href="?review_page={{ review_page.previous_page_number }}#reviews"
+                                                        >
+                                                            Previous
+                                                        </a>
+
+                                                    </li>
+
+                                                {% endif %}
+
+
+                                                {% for page_num in review_page.paginator.page_range %}
+
+                                                    {% if page_num == review_page.number %}
+
+                                                        <li class="page-item active">
+
+                                                        <span class="page-link">
+
+                                                            {{ page_num }}
+
+                                                        </span>
+
+                                                        </li>
+
+                                                    {% else %}
+
+                                                        <li class="page-item">
+
+                                                            <a
+                                                                    class="page-link"
+                                                                    href="?review_page={{ page_num }}#reviews"
+                                                            >
+                                                                {{ page_num }}
+                                                            </a>
+
+                                                        </li>
+
+                                                    {% endif %}
+
+                                                {% endfor %}
+
+
+                                                {% if review_page.has_next %}
+
+                                                    <li class="page-item">
+
+                                                        <a
+                                                                class="page-link"
+                                                                href="?review_page={{ review_page.next_page_number }}#reviews"
+                                                        >
+                                                            Next
+                                                        </a>
+
+                                                    </li>
+
+                                                {% endif %}
+
+
+                                            </ul>
+
+                                        </nav>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                                <!-- ================================================= -->
+                                <!-- REVIEW FORM -->
+                                <!-- ================================================= -->
+
+                                <div class="col-md-6">
+
+
+                                    <h4 class="mb-4">
+                                        Leave a review
+                                    </h4>
+
+
+                                    {% if user.is_authenticated %}
+
+
+                                        {% if user_review %}
+
+
+                                            <!-- ================================= -->
+                                            <!-- ALREADY REVIEWED -->
+                                            <!-- ================================= -->
+
+                                            <div class="alert alert-info">
+
+                                                You have already reviewed this product.
+
+                                            </div>
+
+
+                                        {% else %}
+
+
+                                            <small class="text-muted">
+
+                                                Share your experience with this product.
+
+                                            </small>
+
+
+                                            <form
+                                                    method="post"
+                                                    class="mt-3"
+                                            >
+
+                                                {% csrf_token %}
+
+
+                                                <!-- ============================= -->
+                                                <!-- RATING -->
+                                                <!-- ============================= -->
+
+                                                <div class="form-group">
+
+
+                                                    <label class="d-block mb-2">
+
+                                                        Your Rating *
+
+                                                    </label>
+
+
+                                                    <div class="product-rating">
+
+
+                                                        <!-- HIDDEN INPUTS -->
+
+                                                        <input
+                                                                type="radio"
+                                                                name="rating"
+                                                                value="1"
+                                                                id="rating-1"
+                                                        >
+
+                                                        <input
+                                                                type="radio"
+                                                                name="rating"
+                                                                value="2"
+                                                                id="rating-2"
+                                                        >
+
+                                                        <input
+                                                                type="radio"
+                                                                name="rating"
+                                                                value="3"
+                                                                id="rating-3"
+                                                        >
+
+                                                        <input
+                                                                type="radio"
+                                                                name="rating"
+                                                                value="4"
+                                                                id="rating-4"
+                                                        >
+
+                                                        <input
+                                                                type="radio"
+                                                                name="rating"
+                                                                value="5"
+                                                                id="rating-5"
+                                                        >
+
+
+                                                        <!-- VISIBLE STARS -->
+
+                                                        <label
+                                                                for="rating-1"
+                                                                class="rating-star"
+                                                                data-rating="1"
+                                                        >
+                                                            <i class="fa fa-star"></i>
+                                                        </label>
+
+
+                                                        <label
+                                                                for="rating-2"
+                                                                class="rating-star"
+                                                                data-rating="2"
+                                                        >
+                                                            <i class="fa fa-star"></i>
+                                                        </label>
+
+
+                                                        <label
+                                                                for="rating-3"
+                                                                class="rating-star"
+                                                                data-rating="3"
+                                                        >
+                                                            <i class="fa fa-star"></i>
+                                                        </label>
+
+
+                                                        <label
+                                                                for="rating-4"
+                                                                class="rating-star"
+                                                                data-rating="4"
+                                                        >
+                                                            <i class="fa fa-star"></i>
+                                                        </label>
+
+
+                                                        <label
+                                                                for="rating-5"
+                                                                class="rating-star"
+                                                                data-rating="5"
+                                                        >
+                                                            <i class="fa fa-star"></i>
+                                                        </label>
+
+                                                    </div>
+
+
+                                                    {% if review_form.rating.errors %}
+
+                                                        <div class="text-danger mt-2">
+
+                                                            {{ review_form.rating.errors }}
+
+                                                        </div>
+
+                                                    {% endif %}
+
+
+                                                </div>
+
+
+                                                <!-- ============================= -->
+                                                <!-- COMMENT -->
+                                                <!-- ============================= -->
+
+                                                <div class="form-group">
+
+
+                                                    <label
+                                                            for="{{ review_form.comment.id_for_label }}"
+                                                    >
+
+                                                        Your Review *
+
+                                                    </label>
+
+
+                                                    {{ review_form.comment }}
+
+
+                                                    {% if review_form.comment.errors %}
+
+                                                        <div class="text-danger mt-2">
+
+                                                            {{ review_form.comment.errors }}
+
+                                                        </div>
+
+                                                    {% endif %}
+
+
+                                                </div>
+
+
+                                                <!-- ============================= -->
+                                                <!-- SUBMIT -->
+                                                <!-- ============================= -->
+
+                                                <button
+                                                        type="submit"
+                                                        class="btn btn-primary px-4"
+                                                >
+
+                                                    Submit Review
+
+                                                </button>
+
+
+                                            </form>
+
+
+                                        {% endif %}
+
+
+                                    {% else %}
+
+
+                                        <div class="alert alert-warning">
+
+                                            Please login to write a review.
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================= -->
+    <!-- RELATED PRODUCTS -->
+    <!-- ============================================================= -->
+
+    {% if related_products %}
+
+        <div class="container-fluid py-5">
+
+
+            <h2
+                    class="section-title position-relative text-uppercase mx-xl-5 mb-4"
+            >
+
+            <span class="bg-secondary pr-3">
+
+                You May Also Like
+
+            </span>
+
+            </h2>
+
+
+            <div class="row px-xl-5">
+
+
+                {% for related in related_products %}
+
+
+                    <div class="col-lg-3 col-md-6 col-sm-6 pb-1">
+
+
+                        <div class="product-item bg-light mb-4">
+
+
+                            <!-- IMAGE -->
+
+                            <div
+                                    class="product-img position-relative overflow-hidden"
+                                    style="height: 250px;"
+                            >
+
+                                <a
+                                        href="{{ related.get_absolute_url }}"
+                                >
+
+                                    {% if related.image %}
+
+                                        <img
+                                                class="img-fluid w-100 h-100"
+                                                src="{{ related.image.url }}"
+                                                alt="{{ related.title }}"
+                                                style="object-fit: contain;"
+                                        >
+
+                                    {% else %}
+
+                                        <img
+                                                class="img-fluid w-100 h-100"
+                                                src="{% static 'img/no-image.jpg' %}"
+                                                alt="No image"
+                                                style="object-fit: contain;"
+                                        >
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                <div class="product-action">
+
+
+                                    <a
+                                            class="btn btn-outline-dark btn-square"
+                                            href="{{ related.get_absolute_url }}"
+                                            title="View Product"
+                                    >
+
+                                        <i class="fa fa-search"></i>
+
+                                    </a>
+
+
+                                    <a
+                                            class="btn btn-outline-dark btn-square"
+                                            href="#"
+                                            title="Add To Cart"
+                                    >
+
+                                        <i class="fa fa-shopping-cart"></i>
+
+                                    </a>
+
+
+                                    <a
+                                            class="btn btn-outline-dark btn-square"
+                                            href="#"
+                                            title="Add To Wishlist"
+                                    >
+
+                                        <i class="far fa-heart"></i>
+
+                                    </a>
+
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- INFO -->
+
+                            <div class="text-center py-4">
+
+
+                                <a
+                                        class="h6 text-decoration-none text-truncate d-block px-3"
+                                        href="{{ related.get_absolute_url }}"
+                                >
+
+                                    {{ related.title }}
+
+                                </a>
+
+
+                                <div
+                                        class="d-flex align-items-center justify-content-center mt-2"
+                                >
+
+                                    {% if related.discount > 0 %}
+
+                                        <h5 class="mb-0">
+
+                                            {{ related.final_price }}
+
+                                        </h5>
+
+
+                                        <h6 class="text-muted ml-2 mb-0">
+
+                                            <del>
+
+                                                {{ related.price }}
+
+                                            </del>
+
+                                        </h6>
+
+                                    {% else %}
+
+                                        <h5 class="mb-0">
+
+                                            {{ related.price }}
+
+                                        </h5>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if related.discount > 0 %}
+
+                                    <div class="mt-2">
+
+                                    <span class="badge badge-danger">
+
+                                        {{ related.discount }}% OFF
+
+                                    </span>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- ============================================================= -->
+    <!-- CSS -->
+    <!-- ============================================================= -->
+
+    <style>
+
+        /* ========================================================= */
+        /* REVIEW */
+        /* ========================================================= */
+
+        .review-item:last-child {
+            border-bottom: none !important;
+            margin-bottom: 0 !important;
+        }
+
+
+        .review-comment {
+            line-height: 1.8;
+            word-break: break-word;
+        }
+
+
+        /* ========================================================= */
+        /* RATING */
+        /* ========================================================= */
+
+        .product-rating {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+        }
+
+
+        /* Hide radio buttons */
+
+        .product-rating input {
+
+            display: none;
+
+        }
+
+
+        /* Stars */
+
+        .product-rating .rating-star {
+
+            display: inline-block;
+
+            margin: 0;
+
+            padding: 0;
+
+            cursor: pointer;
+
+            font-size: 32px;
+
+            line-height: 1;
+
+            color: #d5d5d5;
+
+            transition: color 0.15s ease,
+            transform 0.15s ease;
+
+        }
+
+
+        /* Hover */
+
+        .product-rating .rating-star:hover {
+
+            transform: scale(1.08);
+
+        }
+
+
+        /* Selected stars */
+
+        .product-rating .rating-star.active {
+
+            color: #ff9800;
+
+        }
+
+
+        /* Hover preview */
+
+        .product-rating .rating-star.hovered {
+
+            color: #ff9800;
+
+        }
+
+    </style>
+
+
+    <!-- ============================================================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================= -->
+
+    <script>
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+
+                /* ===================================================== */
+                /* PRODUCT QUANTITY */
+                /* ===================================================== */
+
+                const quantityInput =
+                    document.getElementById(
+                        'product-quantity'
+                    );
+
+
+                const plusButton =
+                    document.querySelector(
+                        '.product-quantity-plus'
+                    );
+
+
+                const minusButton =
+                    document.querySelector(
+                        '.product-quantity-minus'
+                    );
+
+
+                if (
+                    quantityInput &&
+                    plusButton &&
+                    minusButton
+                ) {
+
+
+                    plusButton.addEventListener(
+                        'click',
+                        function () {
+
+
+                            let quantity =
+                                parseInt(
+                                    quantityInput.value,
+                                    10
+                                ) || 1;
+
+
+                            quantity += 1;
+
+
+                            quantityInput.value =
+                                quantity;
+
+                        }
+                    );
+
+
+                    minusButton.addEventListener(
+                        'click',
+                        function () {
+
+
+                            let quantity =
+                                parseInt(
+                                    quantityInput.value,
+                                    10
+                                ) || 1;
+
+
+                            if (quantity > 1) {
+
+                                quantity -= 1;
+
+                                quantityInput.value =
+                                    quantity;
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                /* ===================================================== */
+                /* PRODUCT RATING */
+                /* ===================================================== */
+
+                const ratingInputs =
+                    document.querySelectorAll(
+                        '.product-rating input'
+                    );
+
+
+                const ratingStars =
+                    document.querySelectorAll(
+                        '.product-rating .rating-star'
+                    );
+
+
+                function updateRatingStars(
+                    rating
+                ) {
+
+
+                    ratingStars.forEach(
+                        function (star) {
+
+
+                            const starRating =
+                                parseInt(
+                                    star.dataset.rating,
+                                    10
+                                );
+
+
+                            if (
+                                starRating <= rating
+                            ) {
+
+
+                                star.classList.add(
+                                    'active'
+                                );
+
+
+                            } else {
+
+
+                                star.classList.remove(
+                                    'active'
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                /* ===================================================== */
+                /* CLICK STAR */
+                /* ===================================================== */
+
+                ratingInputs.forEach(
+                    function (input) {
+
+
+                        input.addEventListener(
+                            'change',
+                            function () {
+
+
+                                const rating =
+                                    parseInt(
+                                        this.value,
+                                        10
+                                    );
+
+
+                                updateRatingStars(
+                                    rating
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                /* ===================================================== */
+                /* HOVER STAR */
+                /* ===================================================== */
+
+                ratingStars.forEach(
+                    function (star) {
+
+
+                        star.addEventListener(
+                            'mouseenter',
+                            function () {
+
+
+                                const rating =
+                                    parseInt(
+                                        this.dataset.rating,
+                                        10
+                                    );
+
+
+                                ratingStars.forEach(
+                                    function (item) {
+
+
+                                        const itemRating =
+                                            parseInt(
+                                                item.dataset.rating,
+                                                10
+                                            );
+
+
+                                        if (
+                                            itemRating <= rating
+                                        ) {
+
+
+                                            item.classList.add(
+                                                'hovered'
+                                            );
+
+
+                                        } else {
+
+
+                                            item.classList.remove(
+                                                'hovered'
+                                            );
+
+                                        }
+
+                                    }
+                                );
+
+                            }
+                        );
+
+
+                        star.addEventListener(
+                            'mouseleave',
+                            function () {
+
+
+                                ratingStars.forEach(
+                                    function (item) {
+
+                                        item.classList.remove(
+                                            'hovered'
+                                        );
+
+                                    }
+                                );
+
+
+                                const selectedRating =
+                                    document.querySelector(
+                                        '.product-rating input:checked'
+                                    );
+
+
+                                if (selectedRating) {
+
+
+                                    updateRatingStars(
+                                        parseInt(
+                                            selectedRating.value,
+                                            10
+                                        )
+                                    );
+
+
+                                } else {
+
+
+                                    updateRatingStars(
+                                        0
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            }
+        );
+
+    </script>
+
+
+{% endblock %}
+

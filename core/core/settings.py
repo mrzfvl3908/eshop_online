@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # my_apps
     'home_app.apps.HomeAppConfig',
@@ -148,7 +149,7 @@ MELIPAYAMAK_OTP_EXPIRE_MINUTES = 2
 MELIPAYAMAK_MAX_OTP_ATTEMPTS = 5
 MELIPAYAMAK_OTP_RESEND_SECONDS = 60
 
-#Security
+# Security
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SAMESITE = "Lax"
@@ -163,7 +164,7 @@ CSRF_COOKIE_SAMESITE = "Lax"
 # SECURE_SSL_REDIRECT = True
 
 
-#Rate Limit
+# Rate Limit
 AUTH_RATE_LIMIT_ENABLED = True
 LOGIN_RATE_LIMIT = 10
 LOGIN_RATE_LIMIT_WINDOW = 15 * 60

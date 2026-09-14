@@ -1,0 +1,812 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    Products
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- ========================================================= -->
+    <!-- Breadcrumb -->
+    <!-- ========================================================= -->
+
+    <div class="container-fluid">
+
+        <div class="row px-xl-5">
+
+            <div class="col-12">
+
+                <nav class="breadcrumb bg-light mb-30">
+
+                    <a
+                            class="breadcrumb-item text-dark"
+                            href="{% url 'home_app:home' %}"
+                    >
+                        Home
+                    </a>
+
+                    <span class="breadcrumb-item active">
+                        Products
+                    </span>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SHOP START -->
+    <!-- ========================================================= -->
+
+    <div class="container-fluid">
+
+        <div class="row px-xl-5">
+
+
+            <!-- ===================================================== -->
+            <!-- SIDEBAR -->
+            <!-- ===================================================== -->
+
+            <div class="col-lg-3 col-md-4">
+
+
+                <!-- ================================================= -->
+                <!-- FILTER FORM -->
+                <!-- ================================================= -->
+
+                <form method="get" id="filter-form">
+
+
+                    <!-- ============================================= -->
+                    <!-- PRICE -->
+                    <!-- ============================================= -->
+
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+
+                        <span class="bg-secondary pr-3">
+                            Filter by price
+                        </span>
+
+                    </h5>
+
+
+                    <div class="bg-light p-4 mb-30">
+
+
+                        <!-- ALL PRICE -->
+
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                            <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="price-all"
+                                    onclick="
+                                        document
+                                        .querySelectorAll('.price-filter')
+                                        .forEach(function(element) {
+                                            element.checked = false;
+                                        });
+                                    "
+                                    {% if not selected_prices %}
+                                    checked
+                                    {% endif %}
+                            >
+
+                            <label
+                                    class="custom-control-label"
+                                    for="price-all"
+                            >
+                                All Price
+                            </label>
+
+                        </div>
+
+
+                        <!-- PRICE OPTIONS -->
+
+                        {% for price in price_filters %}
+
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                                <input
+                                        type="checkbox"
+                                        class="custom-control-input price-filter"
+                                        id="price-{{ forloop.counter }}"
+                                        name="price"
+                                        value="{{ price.value }}"
+                                        {% if price.value in selected_prices %}
+                                        checked
+                                        {% endif %}
+                                >
+
+                                <label
+                                        class="custom-control-label"
+                                        for="price-{{ forloop.counter }}"
+                                >
+                                    {{ price.label }}
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                    <!-- ============================================= -->
+                    <!-- COLOR -->
+                    <!-- ============================================= -->
+
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+
+                        <span class="bg-secondary pr-3">
+                            Filter by color
+                        </span>
+
+                    </h5>
+
+
+                    <div class="bg-light p-4 mb-30">
+
+
+                        {% if colors %}
+
+                            {% for color in colors %}
+
+                                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                                    <input
+                                            type="checkbox"
+                                            class="custom-control-input color-filter"
+                                            id="color-{{ color.color__id }}"
+                                            name="color"
+                                            value="{{ color.color__id }}"
+                                            {% if color.color__id|stringformat:"s" in selected_colors %}
+                                            checked
+                                            {% endif %}
+                                    >
+
+                                    <label
+                                            class="custom-control-label"
+                                            for="color-{{ color.color__id }}"
+                                    >
+                                        {{ color.color__title }}
+                                    </label>
+
+{#                                    <span class="badge border font-weight-normal">#}
+{#                                        {{ color.product_count }}#}
+{#                                    </span>#}
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-muted mb-0">
+                                No colors available.
+                            </p>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <!-- ============================================= -->
+                    <!-- SIZE -->
+                    <!-- ============================================= -->
+
+                    {#                    <h5 class="section-title position-relative text-uppercase mb-3">#}
+                    {##}
+                    {#                        <span class="bg-secondary pr-3">#}
+                    {#                            Filter by size#}
+                    {#                        </span>#}
+                    {##}
+                    {#                    </h5>#}
+                    {##}
+                    {##}
+                    {#                    <div class="bg-light p-4 mb-30">#}
+                    {##}
+                    {##}
+                    {#                        {% if sizes %}#}
+                    {##}
+                    {#                            {% for size in sizes %}#}
+                    {##}
+                    {#                                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">#}
+                    {##}
+                    {#                                    <input#}
+                    {#                                            type="checkbox"#}
+                    {#                                            class="custom-control-input size-filter"#}
+                    {#                                            id="size-{{ size.size__id }}"#}
+                    {#                                            name="size"#}
+                    {#                                            value="{{ size.size__id }}"#}
+                    {#                                            {% if size.size__id|stringformat:"s" in selected_sizes %}#}
+                    {#                                            checked#}
+                    {#                                            {% endif %}#}
+                    {#                                    >#}
+                    {##}
+                    {#                                    <label#}
+                    {#                                            class="custom-control-label"#}
+                    {#                                            for="size-{{ size.size__id }}"#}
+                    {#                                    >#}
+                    {#                                        {{ size.size__title }}#}
+                    {#                                    </label>#}
+                    {##}
+                    {#                                    <span class="badge border font-weight-normal">#}
+                    {#                                        {{ size.product_count }}#}
+                    {#                                    </span>#}
+                    {##}
+                    {#                                </div>#}
+                    {##}
+                    {#                            {% endfor %}#}
+                    {##}
+                    {#                        {% else %}#}
+                    {##}
+                    {#                            <p class="text-muted mb-0">#}
+                    {#                                No sizes available.#}
+                    {#                            </p>#}
+                    {##}
+                    {#                        {% endif %}#}
+                    {##}
+                    {##}
+                    {#                    </div>#}
+
+
+                    <!-- ============================================= -->
+                    <!-- APPLY FILTERS -->
+                    <!-- ============================================= -->
+
+                    <button
+                            type="submit"
+                            class="btn btn-primary btn-block mb-3"
+                    >
+
+                        <i class="fa fa-filter mr-2"></i>
+
+                        Apply Filters
+
+                    </button>
+
+
+                    <!-- ============================================= -->
+                    <!-- CLEAR FILTERS -->
+                    <!-- ============================================= -->
+
+                    <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-block mb-4"
+                            onclick="clearAllFilters()"
+                    >
+
+                        <i class="fa fa-times mr-2"></i>
+
+                        Clear Filters
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+            <!-- ===================================================== -->
+            <!-- PRODUCTS -->
+            <!-- ===================================================== -->
+
+            <div class="col-lg-9 col-md-8">
+
+
+                <div class="row pb-3">
+
+
+                    <!-- ================================================= -->
+                    <!-- SHOP HEADER -->
+                    <!-- ================================================= -->
+
+                    <div class="col-12 pb-1">
+
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+
+
+                            <!-- PRODUCT COUNT -->
+
+                            <div>
+
+                                <h5 class="mb-0">
+
+                                    {% if paginator.count == 1 %}
+
+                                        1 Product Found
+
+                                    {% else %}
+
+                                        {{ paginator.count }} Products Found
+
+                                    {% endif %}
+
+                                </h5>
+
+                            </div>
+
+
+                            <!-- SORT -->
+
+{#                            <div>#}
+{##}
+{#                                <div class="btn-group">#}
+{##}
+{#                                    <button#}
+{#                                            type="button"#}
+{#                                            class="btn btn-sm btn-light dropdown-toggle"#}
+{#                                            data-toggle="dropdown"#}
+{#                                            aria-haspopup="true"#}
+{#                                            aria-expanded="false"#}
+{#                                    >#}
+{##}
+{#                                        {% if current_sort == 'price_low' %}#}
+{##}
+{#                                            Price: Low to High#}
+{##}
+{#                                        {% elif current_sort == 'price_high' %}#}
+{##}
+{#                                            Price: High to Low#}
+{##}
+{#                                        {% elif current_sort == 'name' %}#}
+{##}
+{#                                            Name#}
+{##}
+{#                                        {% else %}#}
+{##}
+{#                                            Latest#}
+{##}
+{#                                        {% endif %}#}
+{##}
+{#                                    </button>#}
+{##}
+{##}
+{#                                    <div class="dropdown-menu dropdown-menu-right">#}
+{##}
+{##}
+{#                                        <!-- ===================================== -->#}
+{#                                        <!-- LATEST -->#}
+{#                                        <!-- ===================================== -->#}
+{##}
+{#                                        <a#}
+{#                                                class="dropdown-item"#}
+{#                                                href="{{ sort_latest_url }}"#}
+{#                                        >#}
+{#                                            Latest#}
+{#                                        </a>#}
+{##}
+{##}
+{#                                        <!-- ===================================== -->#}
+{#                                        <!-- CHEAPEST -->#}
+{#                                        <!-- ===================================== -->#}
+{##}
+{#                                        <a#}
+{#                                                class="dropdown-item"#}
+{#                                                href="{{ sort_price_low_url }}"#}
+{#                                        >#}
+{#                                            Price: Low to High#}
+{#                                        </a>#}
+{##}
+{##}
+{#                                        <!-- ===================================== -->#}
+{#                                        <!-- MOST EXPENSIVE -->#}
+{#                                        <!-- ===================================== -->#}
+{##}
+{#                                        <a#}
+{#                                                class="dropdown-item"#}
+{#                                                href="{{ sort_price_high_url }}"#}
+{#                                        >#}
+{#                                            Price: High to Low#}
+{#                                        </a>#}
+{##}
+{##}
+{#                                        <!-- ===================================== -->#}
+{#                                        <!-- NAME -->#}
+{#                                        <!-- ===================================== -->#}
+{##}
+{#                                        <a#}
+{#                                                class="dropdown-item"#}
+{#                                                href="{{ sort_name_url }}"#}
+{#                                        >#}
+{#                                            Name#}
+{#                                        </a>#}
+{##}
+{##}
+{#                                    </div>#}
+{##}
+{#                                </div>#}
+{##}
+{#                            </div>#}
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- PRODUCT LOOP -->
+                    <!-- ================================================= -->
+
+                    {% for product in products %}
+
+                        <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+
+                            <div class="product-item bg-light mb-4">
+
+
+                                <!-- ===================================== -->
+                                <!-- IMAGE -->
+                                <!-- ===================================== -->
+
+                                <div class="product-img position-relative overflow-hidden">
+
+                                    <a href="{{ product.get_absolute_url }}">
+
+                                        {% if product.image %}
+
+                                            <img
+                                                    class="img-fluid w-100"
+                                                    src="{{ product.image.url }}"
+                                                    alt="{{ product.title }}"
+                                                    style="
+                                                        width: 100%;
+                                                        height: 250px;
+                                                        object-fit: contain;
+                                                    "
+                                            >
+
+                                        {% else %}
+
+                                            <img
+                                                    class="img-fluid w-100"
+                                                    src="{% static 'img/no-image.jpg' %}"
+                                                    alt="No image"
+                                                    style="
+                                                        width: 100%;
+                                                        height: 250px;
+                                                        object-fit: contain;
+                                                    "
+                                            >
+
+                                        {% endif %}
+
+                                    </a>
+
+
+                                    <!-- ================================= -->
+                                    <!-- ACTIONS -->
+                                    <!-- ================================= -->
+
+                                    <div class="product-action">
+
+
+                                        <!-- DETAIL -->
+
+                                        <a
+                                                class="btn btn-outline-dark btn-square"
+                                                href="{{ product.get_absolute_url }}"
+                                                title="View Product"
+                                        >
+                                            <i class="fa fa-search"></i>
+                                        </a>
+
+
+                                        <!-- CART -->
+
+                                        <a
+                                                class="btn btn-outline-dark btn-square"
+                                                href="#"
+                                                title="Add To Cart"
+                                        >
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
+
+
+                                        <!-- WISHLIST -->
+
+                                        <a
+                                                class="btn btn-outline-dark btn-square"
+                                                href="#"
+                                                title="Add To Wishlist"
+                                        >
+                                            <i class="far fa-heart"></i>
+                                        </a>
+
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ===================================== -->
+                                <!-- PRODUCT INFO -->
+                                <!-- ===================================== -->
+
+                                <div class="text-center py-4">
+
+
+                                    <!-- TITLE -->
+
+                                    <a
+                                            class="h6 text-decoration-none text-truncate d-block px-3"
+                                            href="{{ product.get_absolute_url }}"
+                                    >
+                                        {{ product.title }}
+                                    </a>
+
+
+                                    <!-- PRICE -->
+
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+
+                                        {% if product.discount > 0 %}
+
+                                            <h5 class="mb-0">
+                                                {{ product.final_price }}
+                                            </h5>
+
+                                            <h6 class="text-muted ml-2 mb-0">
+
+                                                <del>
+                                                    {{ product.price }}
+                                                </del>
+
+                                            </h6>
+
+                                        {% else %}
+
+                                            <h5 class="mb-0">
+                                                {{ product.price }}
+                                            </h5>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- DISCOUNT -->
+
+                                    {% if product.discount > 0 %}
+
+                                        <div class="mt-2">
+
+                                            <span class="badge badge-danger">
+
+                                                {{ product.discount }}% OFF
+
+                                            </span>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- CATEGORY -->
+
+                                    {% if product.category.all %}
+
+                                        <div class="mt-2">
+
+                                            {% for category in product.category.all %}
+
+                                                <small class="text-muted">
+
+                                                    {{ category.name }}
+
+                                                    {% if not forloop.last %}
+                                                        ,
+                                                    {% endif %}
+
+                                                </small>
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                    {% empty %}
+
+
+                        <!-- ================================================= -->
+                        <!-- EMPTY -->
+                        <!-- ================================================= -->
+
+                        <div class="col-12">
+
+                            <div class="alert alert-info text-center">
+
+                                <i class="fa fa-info-circle mr-2"></i>
+
+                                No products match your filters.
+
+                            </div>
+
+                            <div class="text-center">
+
+                                <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        onclick="clearAllFilters()"
+                                >
+                                    Show All Products
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                    <!-- ================================================= -->
+                    <!-- PAGINATION -->
+                    <!-- ================================================= -->
+
+                    {% if is_paginated %}
+
+                        <div class="col-12">
+
+                            <nav aria-label="Product pagination">
+
+                                <ul class="pagination justify-content-center">
+
+
+                                    <!-- PREVIOUS -->
+
+                                    {% if page_obj.has_previous %}
+
+                                        <li class="page-item">
+
+                                            <a
+                                                    class="page-link"
+                                                    href="?
+
+                                                            {% if filter_query %}{{ filter_query }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                                            >
+                                                Previous
+                                            </a>
+
+                                        </li>
+
+                                    {% else %}
+
+                                        <li class="page-item disabled">
+
+                                            <span class="page-link">
+                                                Previous
+                                            </span>
+
+                                        </li>
+
+                                    {% endif %}
+
+
+                                    <!-- PAGE NUMBERS -->
+
+                                    {% for page_number in paginator.page_range %}
+
+                                        {% if page_number == page_obj.number %}
+
+                                            <li class="page-item active">
+
+                                                <span class="page-link">
+                                                    {{ page_number }}
+                                                </span>
+
+                                            </li>
+
+                                        {% else %}
+
+                                            <li class="page-item">
+
+                                                <a
+                                                        class="page-link"
+                                                        href="?
+
+                                                                {% if filter_query %}{{ filter_query }}&{% endif %}page={{ page_number }}"
+                                                >
+                                                    {{ page_number }}
+                                                </a>
+
+                                            </li>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+
+                                    <!-- NEXT -->
+
+                                    {% if page_obj.has_next %}
+
+                                        <li class="page-item">
+
+                                            <a
+                                                    class="page-link"
+                                                    href="?
+
+                                                            {% if filter_query %}{{ filter_query }}&{% endif %}page={{ page_obj.next_page_number }}"
+                                            >
+                                                Next
+                                            </a>
+
+                                        </li>
+
+                                    {% else %}
+
+                                        <li class="page-item disabled">
+
+                                            <span class="page-link">
+                                                Next
+                                            </span>
+
+                                        </li>
+
+                                    {% endif %}
+
+
+                                </ul>
+
+                            </nav>
+
+                        </div>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- CLEAR FILTERS JAVASCRIPT -->
+    <!-- ========================================================= -->
+
+    <script>
+
+        function clearAllFilters() {
+
+            const cleanUrl = window.location.origin
+                + "{% url 'product_app:product-list' %}";
+
+            window.location.replace(cleanUrl);
+
+        }
+
+    </script>
+
+
+{% endblock %}
