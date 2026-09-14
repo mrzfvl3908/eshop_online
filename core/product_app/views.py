@@ -1,4 +1,3 @@
-from django.db import models
 from django.db.models import Avg, Count, Q
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -12,11 +11,8 @@ from .models import Product
 
 class ProductListView(ListView):
     model = Product
-
     template_name = 'product_app/product_list.html'
-
     context_object_name = 'products'
-
     paginate_by = 9
 
     def get_queryset(self):
@@ -31,9 +27,15 @@ class ProductListView(ListView):
             )
         )
 
-        # ==========================================================
-        # PRICE FILTER
-        # ==========================================================
+        search_query = self.request.GET.get(
+            'search',
+            ''
+        ).strip()
+
+        if search_query:
+            queryset = queryset.filter(
+                title__icontains=search_query
+            )
 
         selected_prices = self.request.GET.getlist('price')
 
@@ -56,13 +58,10 @@ class ProductListView(ListView):
             minimum, maximum = price_filters[price_range]
 
             if maximum is None:
-
                 price_query |= Q(
                     price__gte=minimum
                 )
-
             else:
-
                 price_query |= Q(
                     price__gte=minimum,
                     price__lt=maximum
@@ -73,20 +72,12 @@ class ProductListView(ListView):
                 price_query
             )
 
-        # ==========================================================
-        # COLOR FILTER
-        # ==========================================================
-
         selected_colors = self.request.GET.getlist('color')
 
         if selected_colors:
             queryset = queryset.filter(
                 color__id__in=selected_colors
             )
-
-        # ==========================================================
-        # SIZE FILTER
-        # ==========================================================
 
         selected_sizes = self.request.GET.getlist('size')
 
@@ -95,38 +86,22 @@ class ProductListView(ListView):
                 size__id__in=selected_sizes
             )
 
-        # ==========================================================
-        # SORTING
-        # ==========================================================
-
         sort = self.request.GET.get(
             'sort',
             'latest'
         )
 
         if sort == 'price_low':
-
-            queryset = queryset.order_by(
-                'price'
-            )
+            queryset = queryset.order_by('price')
 
         elif sort == 'price_high':
-
-            queryset = queryset.order_by(
-                '-price'
-            )
+            queryset = queryset.order_by('-price')
 
         elif sort == 'name':
-
-            queryset = queryset.order_by(
-                'title'
-            )
+            queryset = queryset.order_by('title')
 
         else:
-
-            queryset = queryset.order_by(
-                '-created_at'
-            )
+            queryset = queryset.order_by('-created_at')
 
         return queryset.distinct()
 
@@ -134,74 +109,54 @@ class ProductListView(ListView):
 
         context = super().get_context_data(**kwargs)
 
-        # ==========================================================
-        # SELECTED FILTERS
-        # ==========================================================
+        context['search_query'] = self.request.GET.get(
+            'search',
+            ''
+        ).strip()
 
-        context['selected_prices'] = (
-            self.request.GET.getlist('price')
+        context['selected_prices'] = self.request.GET.getlist(
+            'price'
         )
 
-        context['selected_colors'] = (
-            self.request.GET.getlist('color')
+        context['selected_colors'] = self.request.GET.getlist(
+            'color'
         )
 
-        context['selected_sizes'] = (
-            self.request.GET.getlist('size')
+        context['selected_sizes'] = self.request.GET.getlist(
+            'size'
         )
 
-        # ==========================================================
-        # CURRENT SORT
-        # ==========================================================
-
-        context['current_sort'] = (
-            self.request.GET.get(
-                'sort',
-                'latest'
-            )
+        context['current_sort'] = self.request.GET.get(
+            'sort',
+            'latest'
         )
-
-        # ==========================================================
-        # PRICE FILTERS
-        # ==========================================================
 
         context['price_filters'] = [
-
             {
                 'value': '0-100',
                 'label': '$0 - $100',
             },
-
             {
                 'value': '100-200',
                 'label': '$100 - $200',
             },
-
             {
                 'value': '200-300',
                 'label': '$200 - $300',
             },
-
             {
                 'value': '300-400',
                 'label': '$300 - $400',
             },
-
             {
                 'value': '400-500',
                 'label': '$400 - $500',
             },
-
             {
                 'value': '500+',
                 'label': '$500+',
             },
-
         ]
-
-        # ==========================================================
-        # COLORS
-        # ==========================================================
 
         context['colors'] = (
             Product.objects
@@ -224,10 +179,6 @@ class ProductListView(ListView):
             )
         )
 
-        # ==========================================================
-        # FILTER QUERY
-        # ==========================================================
-
         query_params = self.request.GET.copy()
 
         query_params.pop(
@@ -240,13 +191,7 @@ class ProductListView(ListView):
             None
         )
 
-        context['filter_query'] = (
-            query_params.urlencode()
-        )
-
-        # ==========================================================
-        # SORT URLS
-        # ==========================================================
+        context['filter_query'] = query_params.urlencode()
 
         base_url = '?'
 
@@ -277,9 +222,7 @@ class ProductListView(ListView):
 
 class ProductDetailView(DetailView):
     model = Product
-
     template_name = 'product_app/product_detail.html'
-
     context_object_name = 'product'
 
     def get_queryset(self):
@@ -300,20 +243,10 @@ class ProductDetailView(DetailView):
 
         product = self.object
 
-        # ==========================================================
-        # REVIEW FORM
-        # ==========================================================
-
-        context['review_form'] = (
-            kwargs.get(
-                'review_form',
-                ReviewForm()
-            )
+        context['review_form'] = kwargs.get(
+            'review_form',
+            ReviewForm()
         )
-
-        # ==========================================================
-        # REVIEWS
-        # ==========================================================
 
         reviews = (
             product.reviews
@@ -326,21 +259,13 @@ class ProductDetailView(DetailView):
             5
         )
 
-        review_page_number = (
-            self.request.GET.get(
-                'review_page'
-            )
+        review_page_number = self.request.GET.get(
+            'review_page'
         )
 
-        context['review_page'] = (
-            paginator.get_page(
-                review_page_number
-            )
+        context['review_page'] = paginator.get_page(
+            review_page_number
         )
-
-        # ==========================================================
-        # REVIEW STATISTICS
-        # ==========================================================
 
         review_stats = (
             product.reviews
@@ -358,13 +283,7 @@ class ProductDetailView(DetailView):
             else 0
         )
 
-        context['review_count'] = (
-            review_stats['count']
-        )
-
-        # ==========================================================
-        # RELATED PRODUCTS
-        # ==========================================================
+        context['review_count'] = review_stats['count']
 
         category_ids = (
             product.category
@@ -389,10 +308,6 @@ class ProductDetailView(DetailView):
             .distinct()[:8]
         )
 
-        # ==========================================================
-        # CURRENT USER REVIEW
-        # ==========================================================
-
         if self.request.user.is_authenticated:
 
             context['user_review'] = (
@@ -413,10 +328,6 @@ class ProductDetailView(DetailView):
 
         self.object = self.get_object()
 
-        # ==========================================================
-        # AUTHENTICATION
-        # ==========================================================
-
         if not request.user.is_authenticated:
             messages.warning(
                 request,
@@ -426,10 +337,6 @@ class ProductDetailView(DetailView):
             return redirect(
                 f'{self.object.get_absolute_url()}#reviews'
             )
-
-        # ==========================================================
-        # CHECK DUPLICATE REVIEW
-        # ==========================================================
 
         if self.object.reviews.filter(
                 user=request.user
@@ -442,10 +349,6 @@ class ProductDetailView(DetailView):
             return redirect(
                 f'{self.object.get_absolute_url()}#reviews'
             )
-
-        # ==========================================================
-        # REVIEW FORM
-        # ==========================================================
 
         form = ReviewForm(
             request.POST
@@ -483,10 +386,6 @@ class ProductDetailView(DetailView):
                 return redirect(
                     f'{self.object.get_absolute_url()}#reviews'
                 )
-
-        # ==========================================================
-        # FORM ERRORS
-        # ==========================================================
 
         context = self.get_context_data(
             review_form=form
