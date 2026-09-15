@@ -342,10 +342,41 @@
                     <!-- QUANTITY + CART -->
                     <!-- ================================================= -->
 
-                    <div class="d-flex align-items-center pt-2">
+                    <!-- ================================================= -->
+                    <!-- ADD TO CART -->
+                    <!-- ================================================= -->
+
+                    <form
+                            method="post"
+                            action="{% url 'cart_app:cart_add' product.id %}"
+                            class="d-flex align-items-center pt-2"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <!-- Selected Color -->
+
+                        <input
+                                type="hidden"
+                                name="color_id"
+                                id="selected-color"
+                        >
+
+
+                        <!-- Selected Size -->
+
+                        <input
+                                type="hidden"
+                                name="size_id"
+                                id="selected-size"
+                        >
+
+
+                        <!-- Quantity -->
 
                         <div
-                                class="input-group quantity mr-3"
+                                class="input-group product-quantity-wrapper mr-3"
                                 style="width: 130px;"
                         >
 
@@ -353,7 +384,8 @@
 
                                 <button
                                         type="button"
-                                        class="btn btn-primary product-quantity-minus"
+                                        class="btn btn-primary"
+                                        id="product-quantity-minus"
                                 >
 
                                     <i class="fa fa-minus"></i>
@@ -364,10 +396,12 @@
 
 
                             <input
-                                    type="text"
+                                    type="number"
                                     class="form-control bg-secondary border-0 text-center"
                                     value="1"
+                                    min="1"
                                     id="product-quantity"
+                                    name="quantity"
                                     readonly
                             >
 
@@ -376,7 +410,8 @@
 
                                 <button
                                         type="button"
-                                        class="btn btn-primary product-quantity-plus"
+                                        class="btn btn-primary"
+                                        id="product-quantity-plus"
                                 >
 
                                     <i class="fa fa-plus"></i>
@@ -388,10 +423,11 @@
                         </div>
 
 
+                        <!-- Add To Cart -->
+
                         <button
-                                type="button"
+                                type="submit"
                                 class="btn btn-primary px-4"
-                                id="add-to-cart"
                         >
 
                             <i class="fa fa-shopping-cart mr-2"></i>
@@ -400,7 +436,8 @@
 
                         </button>
 
-                    </div>
+                    </form>
+
 
                 </div>
 
@@ -739,15 +776,15 @@
                                                             "
                                                             >
 
-{#                                                                {% if review.user.fullname %}#}
-{##}
-{#                                                                    {{ review.user.fullname }}#}
-{##}
-{#                                                                {% else %}#}
-{##}
-{#                                                                    {{ review.user.fullname }}#}
-{##}
-{#                                                                {% endif %}#}
+                                                                {#                                                                {% if review.user.fullname %}#}
+                                                                {##}
+                                                                {#                                                                    {{ review.user.fullname }}#}
+                                                                {##}
+                                                                {#                                                                {% else %}#}
+                                                                {##}
+                                                                {#                                                                    {{ review.user.fullname }}#}
+                                                                {##}
+                                                                {#                                                                {% endif %}#}
 
                                                             </div>
 
@@ -783,12 +820,12 @@
 
 
                                                             <!-- USERNAME -->
-{##}
-{#                                                            <small class="text-muted ml-2">#}
-{##}
-{#                                                                {{ review.user.fullname }}#}
-{##}
-{#                                                            </small>#}
+                                                            {##}
+                                                            {#                                                            <small class="text-muted ml-2">#}
+                                                            {##}
+                                                            {#                                                                {{ review.user.fullname }}#}
+                                                            {##}
+                                                            {#                                                            </small>#}
 
                                                         </div>
 
@@ -1501,289 +1538,108 @@
     <!-- ============================================================= -->
 
     <script>
-
         document.addEventListener(
             'DOMContentLoaded',
             function () {
-
-
-                /* ===================================================== */
-                /* PRODUCT QUANTITY */
-                /* ===================================================== */
 
                 const quantityInput =
                     document.getElementById(
                         'product-quantity'
                     );
 
-
                 const plusButton =
-                    document.querySelector(
-                        '.product-quantity-plus'
+                    document.getElementById(
+                        'product-quantity-plus'
                     );
-
 
                 const minusButton =
-                    document.querySelector(
-                        '.product-quantity-minus'
+                    document.getElementById(
+                        'product-quantity-minus'
+                    );
+
+                const selectedColor =
+                    document.getElementById(
+                        'selected-color'
+                    );
+
+                const selectedSize =
+                    document.getElementById(
+                        'selected-size'
                     );
 
 
-                if (
-                    quantityInput &&
-                    plusButton &&
-                    minusButton
-                ) {
+                plusButton.addEventListener(
+                    'click',
+                    function () {
+
+                        const quantity =
+                            parseInt(
+                                quantityInput.value,
+                                10
+                            );
+
+                        quantityInput.value =
+                            quantity + 1;
+                    }
+                );
 
 
-                    plusButton.addEventListener(
-                        'click',
-                        function () {
+                minusButton.addEventListener(
+                    'click',
+                    function () {
 
+                        const quantity =
+                            parseInt(
+                                quantityInput.value,
+                                10
+                            );
 
-                            let quantity =
-                                parseInt(
-                                    quantityInput.value,
-                                    10
-                                ) || 1;
-
-
-                            quantity += 1;
-
-
+                        if (quantity > 1) {
                             quantityInput.value =
-                                quantity;
-
+                                quantity - 1;
                         }
-                    );
-
-
-                    minusButton.addEventListener(
-                        'click',
-                        function () {
-
-
-                            let quantity =
-                                parseInt(
-                                    quantityInput.value,
-                                    10
-                                ) || 1;
-
-
-                            if (quantity > 1) {
-
-                                quantity -= 1;
-
-                                quantityInput.value =
-                                    quantity;
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-                /* ===================================================== */
-                /* PRODUCT RATING */
-                /* ===================================================== */
-
-                const ratingInputs =
-                    document.querySelectorAll(
-                        '.product-rating input'
-                    );
-
-
-                const ratingStars =
-                    document.querySelectorAll(
-                        '.product-rating .rating-star'
-                    );
-
-
-                function updateRatingStars(
-                    rating
-                ) {
-
-
-                    ratingStars.forEach(
-                        function (star) {
-
-
-                            const starRating =
-                                parseInt(
-                                    star.dataset.rating,
-                                    10
-                                );
-
-
-                            if (
-                                starRating <= rating
-                            ) {
-
-
-                                star.classList.add(
-                                    'active'
-                                );
-
-
-                            } else {
-
-
-                                star.classList.remove(
-                                    'active'
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-                /* ===================================================== */
-                /* CLICK STAR */
-                /* ===================================================== */
-
-                ratingInputs.forEach(
-                    function (input) {
-
-
-                        input.addEventListener(
-                            'change',
-                            function () {
-
-
-                                const rating =
-                                    parseInt(
-                                        this.value,
-                                        10
-                                    );
-
-
-                                updateRatingStars(
-                                    rating
-                                );
-
-                            }
-                        );
-
                     }
                 );
 
 
-                /* ===================================================== */
-                /* HOVER STAR */
-                /* ===================================================== */
+                document
+                    .querySelectorAll(
+                        'input[name="color"]'
+                    )
+                    .forEach(
+                        function (input) {
 
-                ratingStars.forEach(
-                    function (star) {
-
-
-                        star.addEventListener(
-                            'mouseenter',
-                            function () {
-
-
-                                const rating =
-                                    parseInt(
-                                        this.dataset.rating,
-                                        10
-                                    );
-
-
-                                ratingStars.forEach(
-                                    function (item) {
-
-
-                                        const itemRating =
-                                            parseInt(
-                                                item.dataset.rating,
-                                                10
-                                            );
-
-
-                                        if (
-                                            itemRating <= rating
-                                        ) {
-
-
-                                            item.classList.add(
-                                                'hovered'
-                                            );
-
-
-                                        } else {
-
-
-                                            item.classList.remove(
-                                                'hovered'
-                                            );
-
-                                        }
-
-                                    }
-                                );
-
-                            }
-                        );
-
-
-                        star.addEventListener(
-                            'mouseleave',
-                            function () {
-
-
-                                ratingStars.forEach(
-                                    function (item) {
-
-                                        item.classList.remove(
-                                            'hovered'
-                                        );
-
-                                    }
-                                );
-
-
-                                const selectedRating =
-                                    document.querySelector(
-                                        '.product-rating input:checked'
-                                    );
-
-
-                                if (selectedRating) {
-
-
-                                    updateRatingStars(
-                                        parseInt(
-                                            selectedRating.value,
-                                            10
-                                        )
-                                    );
-
-
-                                } else {
-
-
-                                    updateRatingStars(
-                                        0
-                                    );
-
+                            input.addEventListener(
+                                'change',
+                                function () {
+                                    selectedColor.value =
+                                        this.value;
                                 }
+                            );
+                        }
+                    );
 
-                            }
-                        );
 
-                    }
-                );
+                document
+                    .querySelectorAll(
+                        'input[name="size"]'
+                    )
+                    .forEach(
+                        function (input) {
 
+                            input.addEventListener(
+                                'change',
+                                function () {
+                                    selectedSize.value =
+                                        this.value;
+                                }
+                            );
+                        }
+                    );
 
             }
         );
-
     </script>
 
 
 {% endblock %}
-

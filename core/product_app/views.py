@@ -10,8 +10,11 @@ from .models import Product
 
 class ProductListView(ListView):
     model = Product
+
     template_name = 'product_app/product_list.html'
+
     context_object_name = 'products'
+
     paginate_by = 10
 
     def get_queryset(self):
@@ -26,6 +29,10 @@ class ProductListView(ListView):
             )
         )
 
+        # =========================================
+        # Search
+        # =========================================
+
         search_query = self.request.GET.get(
             'search',
             ''
@@ -36,15 +43,63 @@ class ProductListView(ListView):
                 title__icontains=search_query
             )
 
-        selected_prices = self.request.GET.getlist('price')
+        # =========================================
+        # Category
+        # =========================================
+
+        selected_category = self.request.GET.get(
+            'category'
+        )
+
+        if (
+                selected_category
+                and selected_category.isdigit()
+        ):
+            queryset = queryset.filter(
+                category__id=int(
+                    selected_category
+                )
+            )
+
+        # =========================================
+        # Price
+        # =========================================
+
+        selected_prices = self.request.GET.getlist(
+            'price'
+        )
 
         price_filters = {
-            '0-100': (0, 100),
-            '100-200': (100, 200),
-            '200-300': (200, 300),
-            '300-400': (300, 400),
-            '400-500': (400, 500),
-            '500+': (500, None),
+
+            '0-100': (
+                0,
+                100
+            ),
+
+            '100-200': (
+                100,
+                200
+            ),
+
+            '200-300': (
+                200,
+                300
+            ),
+
+            '300-400': (
+                300,
+                400
+            ),
+
+            '400-500': (
+                400,
+                500
+            ),
+
+            '500+': (
+                500,
+                None
+            ),
         }
 
         price_query = Q()
@@ -54,13 +109,18 @@ class ProductListView(ListView):
             if price_range not in price_filters:
                 continue
 
-            minimum, maximum = price_filters[price_range]
+            minimum, maximum = (
+                price_filters[price_range]
+            )
 
             if maximum is None:
+
                 price_query |= Q(
                     price__gte=minimum
                 )
+
             else:
+
                 price_query |= Q(
                     price__gte=minimum,
                     price__lt=maximum
@@ -71,19 +131,35 @@ class ProductListView(ListView):
                 price_query
             )
 
-        selected_colors = self.request.GET.getlist('color')
+        # =========================================
+        # Color
+        # =========================================
+
+        selected_colors = self.request.GET.getlist(
+            'color'
+        )
 
         if selected_colors:
             queryset = queryset.filter(
                 color__id__in=selected_colors
             )
 
-        selected_sizes = self.request.GET.getlist('size')
+        # =========================================
+        # Size
+        # =========================================
+
+        selected_sizes = self.request.GET.getlist(
+            'size'
+        )
 
         if selected_sizes:
             queryset = queryset.filter(
                 size__id__in=selected_sizes
             )
+
+        # =========================================
+        # Sorting
+        # =========================================
 
         sort = self.request.GET.get(
             'sort',
@@ -91,70 +167,111 @@ class ProductListView(ListView):
         )
 
         if sort == 'price_low':
-            queryset = queryset.order_by('price')
+
+            queryset = queryset.order_by(
+                'price'
+            )
 
         elif sort == 'price_high':
-            queryset = queryset.order_by('-price')
+
+            queryset = queryset.order_by(
+                '-price'
+            )
 
         elif sort == 'name':
-            queryset = queryset.order_by('title')
+
+            queryset = queryset.order_by(
+                'title'
+            )
 
         else:
-            queryset = queryset.order_by('-created_at')
+
+            queryset = queryset.order_by(
+                '-created_at'
+            )
 
         return queryset.distinct()
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(
+            self,
+            **kwargs
+    ):
 
-        context = super().get_context_data(**kwargs)
-
-        context['search_query'] = self.request.GET.get(
-            'search',
-            ''
-        ).strip()
-
-        context['selected_prices'] = self.request.GET.getlist(
-            'price'
+        context = super().get_context_data(
+            **kwargs
         )
 
-        context['selected_colors'] = self.request.GET.getlist(
-            'color'
+        context['search_query'] = (
+            self.request.GET.get(
+                'search',
+                ''
+            ).strip()
         )
 
-        context['selected_sizes'] = self.request.GET.getlist(
-            'size'
+        context['selected_category'] = (
+            self.request.GET.get(
+                'category',
+                ''
+            )
         )
 
-        context['current_sort'] = self.request.GET.get(
-            'sort',
-            'latest'
+        context['selected_prices'] = (
+            self.request.GET.getlist(
+                'price'
+            )
+        )
+
+        context['selected_colors'] = (
+            self.request.GET.getlist(
+                'color'
+            )
+        )
+
+        context['selected_sizes'] = (
+            self.request.GET.getlist(
+                'size'
+            )
+        )
+
+        context['current_sort'] = (
+            self.request.GET.get(
+                'sort',
+                'latest'
+            )
         )
 
         context['price_filters'] = [
+
             {
                 'value': '0-100',
                 'label': '$0 - $100',
             },
+
             {
                 'value': '100-200',
                 'label': '$100 - $200',
             },
+
             {
                 'value': '200-300',
                 'label': '$200 - $300',
             },
+
             {
                 'value': '300-400',
                 'label': '$300 - $400',
             },
+
             {
                 'value': '400-500',
                 'label': '$400 - $500',
             },
+
             {
                 'value': '500+',
                 'label': '$500+',
             },
+
         ]
 
         context['colors'] = (
@@ -178,7 +295,13 @@ class ProductListView(ListView):
             )
         )
 
-        query_params = self.request.GET.copy()
+        # =========================================
+        # Pagination / Sorting URLs
+        # =========================================
+
+        query_params = (
+            self.request.GET.copy()
+        )
 
         query_params.pop(
             'page',
@@ -190,7 +313,9 @@ class ProductListView(ListView):
             None
         )
 
-        context['filter_query'] = query_params.urlencode()
+        context['filter_query'] = (
+            query_params.urlencode()
+        )
 
         base_url = '?'
 
@@ -201,19 +326,23 @@ class ProductListView(ListView):
             )
 
         context['sort_latest_url'] = (
-                base_url + 'sort=latest'
+                base_url
+                + 'sort=latest'
         )
 
         context['sort_price_low_url'] = (
-                base_url + 'sort=price_low'
+                base_url
+                + 'sort=price_low'
         )
 
         context['sort_price_high_url'] = (
-                base_url + 'sort=price_high'
+                base_url
+                + 'sort=price_high'
         )
 
         context['sort_name_url'] = (
-                base_url + 'sort=name'
+                base_url
+                + 'sort=name'
         )
 
         return context

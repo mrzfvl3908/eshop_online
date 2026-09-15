@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'home_app.apps.HomeAppConfig',
     'accounts_app.apps.AccountsAppConfig',
     'product_app.apps.ProductAppConfig',
+    'cart_app.apps.CartAppConfig',
 
     # my_install_apps
     'django_cleanup.apps.CleanupConfig',
@@ -70,6 +71,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart_app.context_processors.shop_context',
+                'product_app.context_processors.categories',
             ],
         },
     },
